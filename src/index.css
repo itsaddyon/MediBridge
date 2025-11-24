@@ -1,0 +1,373 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. */
+@layer base {
+  :root {
+    /* MedTech Healthcare Theme */
+    --background: 0 0% 100%;
+    --foreground: 195 86% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 195 86% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 195 86% 20%;
+
+    /* Primary: Teal */
+    --primary: 186 48% 51%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: Deep Blue */
+    --secondary: 195 86% 29%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted Light Blue */
+    --muted: 188 53% 95%;
+    --muted-foreground: 195 20% 45%;
+
+    --accent: 186 48% 51%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Status Colors */
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
+    --destructive: 0 84% 60%;
+
+    --success-foreground: 0 0% 100%;
+    --warning-foreground: 0 0% 100%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Misc */
+    --border: 188 30% 85%;
+    --input: 188 30% 92%;
+    --ring: 186 48% 51%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 195 86% 10%;
+    --foreground: 0 0% 95%;
+
+    --card: 195 60% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 195 60% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --muted: 195 40% 15%;
+    --muted-foreground: 195 20% 65%;
+
+    --border: 195 40% 20%;
+    --input: 195 40% 20%;
+  }
+
+  /* CLEAN DEFAULTS (NO UGLY GLOBAL BORDERS) */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+  }
+}
+/* ensure the map canvas doesn't steal the highest z-index accidentally */
+.leaflet-container {
+  z-index: 0 !important;
+}
+
+/* if you use any custom control classes, ensure they're above Leaflet's controls */
+.map-controls, .map-legend, .map-overlay {
+  z-index: 3000 !important;
+  position: absolute;
+}
+
+/* if you want some page block to always appear above map, give it a high z-index */
+.page-top-overlay {
+  z-index: 4000;
+  position: relative; /* or absolute depending on layout */
+}
+
+
+/* =========================
+   ANIMATIONS & UI MOTION
+   ========================= */
+
+/* Animated gradient */
+@keyframes medibridge-gradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  background: linear-gradient(120deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--secondary)) 40%,
+    hsl(var(--accent)) 100%);
+  background-size: 300% 300%;
+  animation: medibridge-gradient 12s ease-in-out infinite;
+}
+
+/* Fade in */
+@keyframes medibridge-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: medibridge-fade-in 900ms cubic-bezier(.16,.84,.34,1) both;
+}
+
+/* Slide up */
+@keyframes medibridge-slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: medibridge-slide-up 700ms cubic-bezier(.16,.84,.34,1) both;
+}
+.animate-slide-up.delay-150 { animation-delay: 150ms; }
+.animate-slide-up.delay-200 { animation-delay: 200ms; }
+.animate-slide-up.delay-300 { animation-delay: 300ms; }
+
+/* Soft pulse (logo) */
+@keyframes medibrridge-pulse {
+  0%   { transform: scale(1); opacity: 1; }
+  50%  { transform: scale(1.04); opacity: .95; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-soft-pulse {
+  animation: medibrridge-pulse 2.6s ease-in-out infinite;
+}
+
+/* Shadows / hover effects */
+.icon-glow {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.icon-glow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 48px rgba(0,0,0,0.18);
+}
+
+.card-entrance {
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.card-entrance:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 15px 35px rgba(0,0,0,.18);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-gradient,
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-soft-pulse {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* ===== map UI & marker glow ===== */
+.leaflet-container {
+  font-family: inherit;
+}
+
+/* Custom small control bar (search + filters) */
+.map-controls {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255,255,255,0.06);
+  padding: 8px;
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* search box */
+.map-search {
+  min-width: 220px;
+  max-width: 360px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: var(--foreground);
+}
+
+/* toggle buttons */
+.map-toggle {
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: transparent;
+  color: var(--foreground);
+  font-size: 14px;
+}
+
+/* active state */
+.map-toggle.active {
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  border-color: rgba(255,255,255,0.12);
+}
+
+/* pulsing glow for divIcon markers */
+.custom-marker {
+  transition: transform .18s ease;
+}
+.custom-marker .pulse {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: block;
+  transform-origin: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  animation: med-pulse 2.4s infinite;
+  border: 2px solid rgba(255,255,255,0.85);
+}
+@keyframes med-pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.12); opacity: 0.9; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* popup small tweaks */
+.leaflet-popup-content-wrapper {
+  border-radius: 10px;
+}
+/* =========================
+   Feature card hover glow + sheen
+   Add to the bottom of index.css
+   ========================= */
+
+.feature-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s ease, filter .28s ease;
+  will-change: transform, opacity;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+/* lift + shadow + slight saturation boost on hover */
+.feature-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 22px 40px rgba(2,6,23,0.42), 0 6px 24px rgba(12,76,73,0.06);
+  filter: saturate(1.04);
+}
+
+/* neon-ish halo (accent-aware) */
+.feature-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: 0 0 0 rgba(0,0,0,0); /* initially none */
+  transition: box-shadow .28s ease;
+}
+.feature-card:hover::after {
+  box-shadow: 0 18px 48px rgba(14,165,164,0.07), 0 6px 24px rgba(124,58,237,0.04);
+}
+
+/* accent variants (use data-accent="teal" / "violet" / "amber") */
+.feature-card[data-accent="teal"]:hover::after { box-shadow: 0 18px 48px rgba(14,165,164,0.11), 0 6px 24px rgba(14,165,164,0.06); }
+.feature-card[data-accent="violet"]:hover::after { box-shadow: 0 18px 48px rgba(124,58,237,0.10), 0 6px 24px rgba(124,58,237,0.05); }
+.feature-card[data-accent="amber"]:hover::after { box-shadow: 0 18px 48px rgba(245,158,11,0.10), 0 6px 24px rgba(245,158,11,0.05); }
+
+/* sweep sheen */
+.feature-card::before {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -30%;
+  width: 60%;
+  height: 220%;
+  background: linear-gradient(120deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.09) 45%,
+    rgba(255,255,255,0.12) 50%,
+    rgba(255,255,255,0.03) 60%,
+    rgba(255,255,255,0) 100%);
+  transform: rotate(-20deg) translateX(-110%);
+  transition: transform .9s cubic-bezier(.2,.9,.2,1), opacity .6s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.feature-card:hover::before {
+  transform: rotate(-20deg) translateX(160%);
+  opacity: 1;
+}
+
+/* subtle icon parallax inside the card */
+.feature-card .icon-spot {
+  transition: transform .32s cubic-bezier(.2,.9,.2,1), opacity .32s ease;
+  will-change: transform, opacity;
+}
+.feature-card:hover .icon-spot {
+  transform: translateY(-6px) scale(1.06);
+  opacity: 1;
+}
+
+/* inner padding container to keep things neat */
+.feature-card-inner {
+  padding: 1.25rem;
+  border-radius: 12px;
+}
+
+/* reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .feature-card,
+  .feature-card::before,
+  .feature-card::after,
+  .feature-card .icon-spot {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ===== keep the content from your original index.css (already present) ===== */
+/* (your entire existing file should remain unchanged) */
+
+/* --- Heart SVG fallback / helpers (append these) --- */
+.splash-heart-svg {
+  will-change: transform, opacity;
+  /* animation declared inline in the component, but this keeps a fallback */
+  animation: heart-beat 1.2s ease-in-out infinite;
+  transform-origin: center center;
+}
+.splash-heart-path {
+  will-change: transform, opacity;
+  animation: heart-ring 1.8s ease-out infinite;
+  transform-origin: center center;
+}
+
+/* re-declare keyframes in CSS in case component inline style doesn't load */
+@keyframes heart-beat {
+  0% { transform: scale(0.94); opacity: 0.32; }
+  30% { transform: scale(1.08); opacity: 0.6; }
+  60% { transform: scale(0.98); opacity: 0.46; }
+  100% { transform: scale(0.94); opacity: 0.32; }
+}
+@keyframes heart-ring {
+  0% { transform: scale(0.9); opacity: 0.18; }
+  50% { transform: scale(1.4); opacity: 0.06; }
+  100% { transform: scale(0.9); opacity: 0; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .splash-heart-svg, .splash-heart-path { animation: none !important; opacity: 0.26 !important; }
+}
