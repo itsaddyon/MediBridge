@@ -141,9 +141,24 @@ export default function Index(): JSX.Element {
               <button onClick={() => window.location.href = "tel:112"} className="w-full py-4 bg-rose-600 hover:bg-rose-500 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-3 transition-transform active:scale-95">
                 <Phone className="h-5 w-5" /> Call Ambulance (112)
               </button>
-              <button onClick={() => window.open("http://maps.google.com", "_blank")} className="w-full py-4 bg-slate-800 border border-slate-700 hover:bg-slate-700 rounded-xl font-semibold text-white flex items-center justify-center gap-3">
-                <MapPin className="h-5 w-5 text-cyan-400" /> Locate Hospital
-              </button>
+              <button 
+  onClick={() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        window.open(`https://www.google.com/maps/search/hospitals/@${latitude},${longitude},15z`, "_blank");
+      }, () => {
+        // Fallback if user denies location access
+        window.open("https://www.google.com/maps/search/hospitals+near+me/", "_blank");
+      });
+    } else {
+      window.open("https://www.google.com/maps/search/hospitals+near+me/", "_blank");
+    }
+  }} 
+  className="w-full py-4 bg-slate-800 border border-slate-700 hover:bg-slate-700 rounded-xl font-semibold text-white flex items-center justify-center gap-3"
+>
+  <MapPin className="h-5 w-5 text-cyan-400" /> Locate Hospital
+</button>
             </div>
           </div>
         </div>
