@@ -1,0 +1,578 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. */
+@layer base {
+  :root {
+    /* Healthcare Professional Theme - Sophisticated Medical Palette */
+    --background: 0 0% 100%;
+    --foreground: 215 25% 27%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 27%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 27%;
+
+    /* Primary: Medical Blue - Trustworthy and Professional */
+    --primary: 210 100% 56%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: Warm Gray with subtle blue undertone */
+    --secondary: 220 13% 91%;
+    --secondary-foreground: 215 25% 27%;
+
+    /* Muted: Soft medical gray */
+    --muted: 220 13% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 142 76% 36%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Status Colors - Medical appropriate */
+    --success: 142 76% 36%;
+    --warning: 32 95% 44%;
+    --destructive: 0 84% 60%;
+
+    --success-foreground: 0 0% 100%;
+    --warning-foreground: 0 0% 100%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders and inputs - Subtle and clean */
+    --border: 220 13% 91%;
+    --input: 220 13% 96%;
+    --ring: 210 100% 56%;
+
+    /* Reduced border radius for more professional look */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 16%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 16%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 100% 56%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 16% 65%;
+
+    --accent: 142 76% 36%;
+    --accent-foreground: 0 0% 100%;
+
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 210 100% 56%;
+  }
+
+  /* CLEAN DEFAULTS (NO UGLY GLOBAL BORDERS) */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+  }
+}
+/* ensure the map canvas doesn't steal the highest z-index accidentally */
+.leaflet-container {
+  z-index: 0 !important;
+}
+
+/* if you use any custom control classes, ensure they're above Leaflet's controls */
+.map-controls, .map-legend, .map-overlay {
+  z-index: 3000 !important;
+  position: absolute;
+}
+
+/* if you want some page block to always appear above map, give it a high z-index */
+.page-top-overlay {
+  z-index: 4000;
+  position: relative; /* or absolute depending on layout */
+}
+
+
+/* =========================
+   ANIMATIONS & UI MOTION
+   ========================= */
+
+/* Animated gradient */
+@keyframes medibridge-gradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  background: linear-gradient(120deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--secondary)) 40%,
+    hsl(var(--accent)) 100%);
+  background-size: 300% 300%;
+  animation: medibridge-gradient 12s ease-in-out infinite;
+}
+
+/* Fade in */
+@keyframes medibridge-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: medibridge-fade-in 900ms cubic-bezier(.16,.84,.34,1) both;
+}
+
+/* Slide up */
+@keyframes medibridge-slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: medibridge-slide-up 700ms cubic-bezier(.16,.84,.34,1) both;
+}
+.animate-slide-up.delay-150 { animation-delay: 150ms; }
+.animate-slide-up.delay-200 { animation-delay: 200ms; }
+.animate-slide-up.delay-300 { animation-delay: 300ms; }
+
+/* Soft pulse (logo) */
+@keyframes medibrridge-pulse {
+  0%   { transform: scale(1); opacity: 1; }
+  50%  { transform: scale(1.04); opacity: .95; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-soft-pulse {
+  animation: medibrridge-pulse 2.6s ease-in-out infinite;
+}
+
+/* Shadows / hover effects */
+.icon-glow {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.icon-glow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 48px rgba(0,0,0,0.18);
+}
+
+.card-entrance {
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.card-entrance:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 15px 35px rgba(0,0,0,.18);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-gradient,
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-soft-pulse {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* ===== map UI & marker glow ===== */
+.leaflet-container {
+  font-family: inherit;
+}
+
+/* Custom small control bar (search + filters) */
+.map-controls {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255,255,255,0.06);
+  padding: 8px;
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* search box */
+.map-search {
+  min-width: 220px;
+  max-width: 360px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: var(--foreground);
+}
+
+/* toggle buttons */
+.map-toggle {
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: transparent;
+  color: var(--foreground);
+  font-size: 14px;
+}
+
+/* active state */
+.map-toggle.active {
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  border-color: rgba(255,255,255,0.12);
+}
+
+/* pulsing glow for divIcon markers */
+.custom-marker {
+  transition: transform .18s ease;
+}
+.custom-marker .pulse {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: block;
+  transform-origin: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  animation: med-pulse 2.4s infinite;
+  border: 2px solid rgba(255,255,255,0.85);
+}
+@keyframes med-pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.12); opacity: 0.9; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* popup small tweaks */
+.leaflet-popup-content-wrapper {
+  border-radius: 10px;
+}
+/* =========================
+   Feature card hover glow + sheen
+   Add to the bottom of index.css
+   ========================= */
+
+.feature-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  transition: transform .28s cubic-bezier(.2,.9,.2,1), box-shadow .28s ease, filter .28s ease;
+  will-change: transform, opacity;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+/* lift + shadow + slight saturation boost on hover */
+.feature-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 22px 40px rgba(2,6,23,0.42), 0 6px 24px rgba(12,76,73,0.06);
+  filter: saturate(1.04);
+}
+
+/* neon-ish halo (accent-aware) */
+.feature-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: 0 0 0 rgba(0,0,0,0); /* initially none */
+  transition: box-shadow .28s ease;
+}
+.feature-card:hover::after {
+  box-shadow: 0 18px 48px rgba(14,165,164,0.07), 0 6px 24px rgba(124,58,237,0.04);
+}
+
+/* accent variants (use data-accent="teal" / "violet" / "amber") */
+.feature-card[data-accent="teal"]:hover::after { box-shadow: 0 18px 48px rgba(14,165,164,0.11), 0 6px 24px rgba(14,165,164,0.06); }
+.feature-card[data-accent="violet"]:hover::after { box-shadow: 0 18px 48px rgba(124,58,237,0.10), 0 6px 24px rgba(124,58,237,0.05); }
+.feature-card[data-accent="amber"]:hover::after { box-shadow: 0 18px 48px rgba(245,158,11,0.10), 0 6px 24px rgba(245,158,11,0.05); }
+
+/* sweep sheen */
+.feature-card::before {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -30%;
+  width: 60%;
+  height: 220%;
+  background: linear-gradient(120deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.09) 45%,
+    rgba(255,255,255,0.12) 50%,
+    rgba(255,255,255,0.03) 60%,
+    rgba(255,255,255,0) 100%);
+  transform: rotate(-20deg) translateX(-110%);
+  transition: transform .9s cubic-bezier(.2,.9,.2,1), opacity .6s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.feature-card:hover::before {
+  transform: rotate(-20deg) translateX(160%);
+  opacity: 1;
+}
+
+/* subtle icon parallax inside the card */
+.feature-card .icon-spot {
+  transition: transform .32s cubic-bezier(.2,.9,.2,1), opacity .32s ease;
+  will-change: transform, opacity;
+}
+.feature-card:hover .icon-spot {
+  transform: translateY(-6px) scale(1.06);
+  opacity: 1;
+}
+
+/* inner padding container to keep things neat */
+.feature-card-inner {
+  padding: 1.25rem;
+  border-radius: 12px;
+}
+
+/* reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .feature-card,
+  .feature-card::before,
+  .feature-card::after,
+  .feature-card .icon-spot {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ===== keep the content from your original index.css (already present) ===== */
+/* (your entire existing file should remain unchanged) */
+
+/* --- Heart SVG fallback / helpers (append these) --- */
+.splash-heart-svg {
+  will-change: transform, opacity;
+  /* animation declared inline in the component, but this keeps a fallback */
+  animation: heart-beat 1.2s ease-in-out infinite;
+  transform-origin: center center;
+}
+.splash-heart-path {
+  will-change: transform, opacity;
+  animation: heart-ring 1.8s ease-out infinite;
+  transform-origin: center center;
+}
+
+/* re-declare keyframes in CSS in case component inline style doesn't load */
+@keyframes heart-beat {
+  0% { transform: scale(0.94); opacity: 0.32; }
+  30% { transform: scale(1.08); opacity: 0.6; }
+  60% { transform: scale(0.98); opacity: 0.46; }
+  100% { transform: scale(0.94); opacity: 0.32; }
+}
+@keyframes heart-ring {
+  0% { transform: scale(0.9); opacity: 0.18; }
+  50% { transform: scale(1.4); opacity: 0.06; }
+  100% { transform: scale(0.9); opacity: 0; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .splash-heart-svg, .splash-heart-path { animation: none !important; opacity: 0.26 !important; }
+}
+
+/* Professional UI Enhancements */
+@layer components {
+  /* Subtle card shadows for depth */
+  .card-professional {
+    @apply shadow-sm border border-border/50 hover:shadow-md transition-shadow duration-200;
+  }
+
+  /* Medical-themed gradient backgrounds */
+  .bg-medical-primary {
+    background: linear-gradient(135deg, hsl(210 100% 56%) 0%, hsl(200 100% 50%) 100%);
+  }
+
+  .bg-medical-secondary {
+    background: linear-gradient(135deg, hsl(220 13% 91%) 0%, hsl(210 20% 88%) 100%);
+  }
+
+  /* Professional button variants */
+  .btn-medical-primary {
+    @apply bg-medical-primary hover:opacity-90 text-white font-medium px-6 py-2.5 rounded-md transition-all duration-200 shadow-sm hover:shadow-md;
+  }
+
+  .btn-medical-secondary {
+    @apply bg-medical-secondary hover:bg-opacity-80 text-foreground font-medium px-6 py-2.5 rounded-md transition-all duration-200 border border-border;
+  }
+
+  /* Enhanced typography for medical content */
+  .text-medical-heading {
+    @apply text-2xl font-semibold text-foreground tracking-tight;
+  }
+
+  .text-medical-subheading {
+    @apply text-lg font-medium text-muted-foreground;
+  }
+
+  .text-medical-body {
+    @apply text-base leading-relaxed text-foreground;
+  }
+
+  /* Professional form styling */
+  .form-professional {
+    @apply space-y-6;
+  }
+
+  .form-group-professional {
+    @apply space-y-2;
+  }
+
+  .input-professional {
+    @apply border-border/60 focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors duration-200;
+  }
+
+  /* Dashboard grid improvements */
+  .dashboard-grid {
+    @apply grid gap-6 md:gap-8;
+  }
+
+  .dashboard-card {
+    @apply card-professional p-6 hover:scale-[1.02] transition-transform duration-200;
+  }
+
+  /* Status indicators with better visual hierarchy */
+  .status-indicator {
+    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .status-success {
+    @apply bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800;
+  }
+
+  .status-warning {
+    @apply bg-yellow-50 text-yellow-700 border border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800;
+  }
+
+  .status-error {
+    @apply bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800;
+  }
+
+  .status-info {
+    @apply bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800;
+  }
+
+  /* Professional navigation styling */
+  .nav-professional {
+    @apply border-r border-border/40 bg-card/50 backdrop-blur-sm;
+  }
+
+  .nav-item-professional {
+    @apply flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/50 rounded-lg transition-colors duration-200 mx-2;
+  }
+
+  .nav-item-active {
+    @apply bg-primary/10 text-primary border-r-2 border-primary;
+  }
+
+  /* Dashboard Header Animations */
+  .animate-float-slow {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-medium {
+    animation: float 4s ease-in-out infinite reverse;
+  }
+
+  .animate-float-fast {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+
+  .animate-pulse-gentle {
+    animation: pulse-gentle 3s ease-in-out infinite;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+  }
+
+  .animate-expand-width {
+    animation: expand-width 1s ease-out forwards;
+    transform-origin: left;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 0.3s;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 0.5s;
+  }
+
+  .animation-delay-1000 {
+    animation-delay: 1s;
+  }
+
+  .animation-delay-1500 {
+    animation-delay: 1.5s;
+  }
+}
+
+/* Keyframe Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes pulse-gentle {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes expand-width {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}

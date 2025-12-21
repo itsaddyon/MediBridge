@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MediBridge — Intro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #08121f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: "Inter", sans-serif;
+    color: #e8f9ff;
+  }
+
+  /* BIG beating heart background */
+  .heart {
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, #ff6a6a, #c50000);
+    opacity: 0.25;
+    filter: blur(18px);
+    border-radius: 50%;
+    animation: beat 1.4s infinite ease-in-out;
+  }
+
+  @keyframes beat {
+    0%   { transform: scale(0.95); opacity: 0.18; }
+    50%  { transform: scale(1.15); opacity: 0.32; }
+    100% { transform: scale(0.95); opacity: 0.18; }
+  }
+
+  /* Content wrapper */
+  .content {
+    position: relative;
+    text-align: center;
+    z-index: 10;
+    animation: fadeIn 1.5s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo-box {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 22px;
+    background: linear-gradient(160deg, #23e6cf, #19d4bf);
+    border-radius: 24px;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    color: #012b29;
+    font-size: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+
+  h1 {
+    font-size: 38px;
+    margin: 0;
+    letter-spacing: -1px;
+  }
+
+  p.tagline {
+    font-size: 15px;
+    margin-top: 6px;
+    opacity: 0.8;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="heart"></div>
+
+<div class="content">
+  <div class="logo-box">MB</div>
+  <h1>MediBridge</h1>
+  <p class="tagline">Unified Health Referral & Rural Outreach</p>
+</div>
+
+<script>
+  // Wait 2.8 seconds then go to demo.html
+  setTimeout(() => {
+    window.location.href = "demo.html";
+  }, 2800);
+</script>
+
+</body>
+</html>
