@@ -4,13 +4,17 @@ import dotenv from "dotenv";
 dotenv.config();
 
 if (!admin.apps.length) {
-  // Check if we are using the JSON string from Render's Environment Variables
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     try {
+      // 1. Parse the JSON string
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
       
-      // CRITICAL: This line fixes the private key formatting for Linux servers like Render
-      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+      // 2. 🚨 THE FIX: More aggressive newline replacement
+      // Sometimes it's double-escaped (\\n) and sometimes it's literal.
+      // This ensures the SDK sees a REAL newline character.
+      if (typeof serviceAccount.private_key === 'string') {
+        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+      }
 
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
@@ -20,7 +24,6 @@ if (!admin.apps.length) {
       console.error("❌ Failed to parse FIREBASE_SERVICE_ACCOUNT:", error);
     }
   } else {
-    // Fallback for your local machine development
     try {
       const serviceAccount = require("../serviceAccountKey.json");
       admin.initializeApp({
