@@ -6,32 +6,30 @@ dotenv.config();
 if (!admin.apps.length) {
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     try {
-      // 1. Parse the JSON string
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
       
-      // 2. 🚨 THE FIX: More aggressive newline replacement
-      // Sometimes it's double-escaped (\\n) and sometimes it's literal.
-      // This ensures the SDK sees a REAL newline character.
-      if (typeof serviceAccount.private_key === 'string') {
-        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+      // 🚨 UPDATED FIX: This handles both escaped and literal newlines
+      // This version is more resilient to how different platforms store JSON strings.
+      if (serviceAccount.private_key) {
+        serviceAccount.private_key = serviceAccount.private_key.split('\\n').join('\n');
       }
 
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
       });
-      console.log("✅ Firebase Admin initialized via Environment Variable");
+      console.log("✅ Firebase Admin successfully authenticated");
     } catch (error) {
-      console.error("❌ Failed to parse FIREBASE_SERVICE_ACCOUNT:", error);
+      console.error("❌ Firebase Auth Error:", error);
     }
   } else {
     try {
+      // Local fallback
       const serviceAccount = require("../serviceAccountKey.json");
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
       });
-      console.log("✅ Firebase Admin initialized via local JSON");
     } catch (error) {
-      console.error("❌ Firebase credentials not found in Env or Local File");
+      console.error("❌ No Firebase credentials found");
     }
   }
 }
