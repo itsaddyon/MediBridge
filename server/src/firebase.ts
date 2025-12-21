@@ -1,36 +1,23 @@
 import * as admin from "firebase-admin";
+import path from "path";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 if (!admin.apps.length) {
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    try {
-      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-      
-      // 🚨 UPDATED FIX: This handles both escaped and literal newlines
-      // This version is more resilient to how different platforms store JSON strings.
-      if (serviceAccount.private_key) {
-        serviceAccount.private_key = serviceAccount.private_key.split('\\n').join('\n');
-      }
+  try {
+    // 🚨 Render stores Secret Files in /opt/render/project/src/
+    // This logic handles both Render and your local machine.
+    const serviceAccountPath = process.env.RENDER 
+      ? path.join(process.cwd(), "serviceAccountKey.json") 
+      : path.join(__dirname, "../serviceAccountKey.json");
 
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-      console.log("✅ Firebase Admin successfully authenticated");
-    } catch (error) {
-      console.error("❌ Firebase Auth Error:", error);
-    }
-  } else {
-    try {
-      // Local fallback
-      const serviceAccount = require("../serviceAccountKey.json");
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-    } catch (error) {
-      console.error("❌ No Firebase credentials found");
-    }
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccountPath)
+    });
+    console.log("✅ Firebase Admin successfully authenticated");
+  } catch (error) {
+    console.error("❌ Firebase Auth Error:", error);
   }
 }
 
