@@ -8,12 +8,14 @@ import { Button } from "@/components/ui/button";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { Referral } from "@/types";
+import { serverTimestamp } from "firebase/firestore";
 import {
-  readHospitals,
-  updateHospital,
+  listenHospitals,
   addHospital,
+  updateHospital,
   HospitalBed,
-} from "@/lib/bedStore";
+} from "@/lib/hospitalService";
+
 
 export default function DoctorDashboard() {
   const [referrals, setReferrals] = useState<Referral[]>([]);
@@ -25,7 +27,8 @@ const [hospitals, setHospitals] = useState<HospitalBed[]>([]);
   });
 
   useEffect(() => {
-  setHospitals(readHospitals());
+  const unsub = listenHospitals(setHospitals);
+  return () => unsub();
 }, []);
 
 
@@ -104,8 +107,12 @@ const [hospitals, setHospitals] = useState<HospitalBed[]>([]);
                   <div>
                     <p className="font-semibold">{h.name}</p>
                     <p className="text-sm text-slate-600 dark:text-slate-400">
-                      Updated: {new Date(h.lastUpdated || "").toLocaleString()}
-                    </p>
+  Updated:{" "}
+  {h.lastUpdated?.toDate
+    ? h.lastUpdated.toDate().toLocaleString()
+    : "—"}
+</p>
+
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold">{h.availableBeds}</p>
@@ -123,13 +130,16 @@ const [hospitals, setHospitals] = useState<HospitalBed[]>([]);
   focus:outline-none focus:ring-2 focus:ring-blue-500
 "
 
-                    value={h.totalBeds}
-                    onChange={(e) => {
-                      updateHospital(h.id, {
-                        totalBeds: Number(e.target.value) || 0,
-                      });
-                      setHospitals(readHospitals());
-                    }}
+                    // TOTAL beds input
+value={h.totalBeds}
+onChange={async (e) => {
+  await updateHospital(h.id!, {
+    totalBeds: Number(e.target.value),
+    lastUpdated: serverTimestamp(),
+  });
+}}
+
+
                   />
                   <input
                     className="
@@ -139,13 +149,16 @@ const [hospitals, setHospitals] = useState<HospitalBed[]>([]);
   focus:outline-none focus:ring-2 focus:ring-blue-500
 "
 
-                    value={h.availableBeds}
-                    onChange={(e) => {
-                      updateHospital(h.id, {
-                        availableBeds: Number(e.target.value) || 0,
-                      });
-                      setHospitals(readHospitals());
-                    }}
+                    // AVAILABLE beds input
+value={h.availableBeds}
+onChange={async (e) => {
+  await updateHospital(h.id!, {
+    availableBeds: Number(e.target.value),
+    lastUpdated: serverTimestamp(),
+  });
+}}
+
+
                   />
                 </div>
               </div>
@@ -202,8 +215,8 @@ const [hospitals, setHospitals] = useState<HospitalBed[]>([]);
                     name: newHospital.name,
                     totalBeds: Number(newHospital.totalBeds) || 0,
                     availableBeds: Number(newHospital.availableBeds) || 0,
+                    
                   });
-                  setHospitals(readHospitals());
                   setNewHospital({ name: "", totalBeds: "", availableBeds: "" });
                 }}
               >

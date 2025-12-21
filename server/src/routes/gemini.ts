@@ -6,8 +6,13 @@ const router = express.Router();
 
 // 1. Initialize the SDK with your API Key
 // Ensure the variable name matches what you set in Render (GEMINI_API_KEY)
+console.log("🔑 GEMINI_API_KEY:", process.env.GEMINI_API_KEY);
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({
+  model: "models/gemini-flash-latest",
+});
+
 
 router.post("/", async (req, res) => {
   try {
@@ -24,10 +29,16 @@ router.post("/", async (req, res) => {
 
     const currentLocation = userLocation || "Unknown Location";
 
-    // 2. Fetch Chat History from Firebase
-    const chatRef = db.collection("chats").doc(userId || "guest");
-    const doc = await chatRef.get();
-    const history = doc.exists ? doc.data()?.history || [] : [];
+    let history: any[] = [];
+
+try {
+  const chatRef = db.collection("chats").doc(userId || "guest");
+  const doc = await chatRef.get();
+  history = doc.exists ? doc.data()?.history || [] : [];
+} catch (err) {
+  console.warn("Firestore unavailable, continuing without history");
+}
+
 
     // 3. Define the System Prompt
     const SYSTEM_PROMPT = `
@@ -65,12 +76,18 @@ router.post("/", async (req, res) => {
       { role: "model", text: replyText, timestamp: new Date() },
     ];
 
-    await chatRef.set({
-      history: [...history, ...newMessages],
-      lastUpdated: new Date()
-    }, { merge: true });
+    try {
+  const chatRef = db.collection("chats").doc(userId || "guest");
+  await chatRef.set(
+    { history: [...history, ...newMessages], lastUpdated: new Date() },
+    { merge: true }
+  );
+} catch (err) {
+  console.warn("Failed to save chat history, skipping");
+}
 
-    res.json({ reply: replyText });
+
+    res.json({ response: replyText });
 
   } catch (error: any) {
     console.error("Gemini SDK Error:", error);

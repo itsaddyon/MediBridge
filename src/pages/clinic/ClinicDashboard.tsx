@@ -4,7 +4,7 @@ import { StatsCard } from "@/components/StatsCard";
 import { Users, Send, Clock, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { readHospitals, HospitalBed } from "@/lib/bedStore";
+import { listenHospitals, HospitalBed } from "@/lib/hospitalService";
 import { getAllPatients, Patient } from "@/lib/patientService";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -31,16 +31,17 @@ export default function ClinicDashboard() {
         setLoading(false);
       }
     };
-    
-    const realHospitals = readHospitals().filter(
-  h => h.name && typeof h.totalBeds === "number"
-);
-setHospitals(realHospitals);
 
 
 
     loadData();
   }, []);
+
+  useEffect(() => {
+  const unsub = listenHospitals(setHospitals);
+  return () => unsub();
+}, []);
+
   useEffect(() => {
   const unsubPatients = onSnapshot(
     collection(db, "patients"),
@@ -196,9 +197,12 @@ setHospitals(realHospitals);
                   <div>
                     <div className="font-bold">{h.name}</div>
                     <div className="text-sm">
-                      Updated:{" "}
-                      {new Date(h.lastUpdated || "").toLocaleString()}
-                    </div>
+  Updated:{" "}
+  {h.lastUpdated?.toDate
+    ? h.lastUpdated.toDate().toLocaleString()
+    : "—"}
+</div>
+
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold">

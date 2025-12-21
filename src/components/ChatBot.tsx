@@ -22,24 +22,28 @@ export default function ChatBot() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isOpen]);
 
-  // 🌍 AUTO-LOCATION
-  const getUserLocation = (): Promise<string> => {
-    return new Promise((resolve) => {
-      if (!navigator.geolocation) { resolve("Unknown Location"); return; }
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const { latitude, longitude } = position.coords;
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-            const data = await res.json();
-            const city = data.address.city || data.address.town || "Local Area";
-            resolve(`${city}, ${data.address.state || ""}`);
-          } catch (e) { resolve(`Lat: ${position.coords.latitude}, Long: ${position.coords.longitude}`); }
-        },
-        () => resolve("Unknown Location")
-      );
-    });
-  };
+  // 🌍 AUTO-LOCATION (Updated with User-Agent)
+const getUserLocation = (): Promise<string> => {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) { resolve("Unknown Location"); return; }
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          // 🚨 ADD HEADERS HERE to stop the 403 Forbidden error
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            { headers: { 'User-Agent': 'MediBridge-App/1.0' } }
+          );
+          const data = await res.json();
+          const city = data.address.city || data.address.town || "Local Area";
+          resolve(`${city}, ${data.address.state || ""}`);
+        } catch (e) { resolve(`Lat: ${position.coords.latitude}, Long: ${position.coords.longitude}`); }
+      },
+      () => resolve("Unknown Location")
+    );
+  });
+};
 
   const sendMessage = async (textToSend: string) => {
     if (!textToSend.trim()) return;
@@ -74,12 +78,24 @@ export default function ChatBot() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
 
-      const botMessage = { role: "model" as const, text: data.response };
-      setMessages((prev) => [...prev, botMessage]);
+      const botMessage = {
+  role: "model" as const,
+  text: data.response,
+};
+setMessages((prev) => [...prev, botMessage]);
 
-    } catch (error) {
-      setMessages((prev) => [...prev, { role: "model", text: "⚠️ Server unavailable." }]);
-    } finally {
+
+    } catch (error: any) {
+  console.error("Chatbot error:", error);
+  setMessages((prev) => [
+    ...prev,
+    {
+      role: "model",
+      text: `⚠️ ${error?.message || "Unknown error"}`
+    }
+  ]);
+}
+ finally {
       setIsLoading(false);
     }
   };

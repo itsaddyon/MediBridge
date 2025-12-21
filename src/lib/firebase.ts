@@ -3,7 +3,6 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCXOpeb6PhmuwpaplO7mi7OQuy8lgg-0y8",
   authDomain: "medibridge-cbe84.firebaseapp.com",
   projectId: "medibridge-cbe84",
   storageBucket: "medibridge-cbe84.firebasestorage.app",

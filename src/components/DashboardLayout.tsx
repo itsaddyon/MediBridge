@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { logActivity } from "@/lib/activityLogService";
@@ -62,6 +62,8 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const config = roleConfig[role];
+  const [mobileOpen, setMobileOpen] = useState(false);
+
 
   const handleLogout = async () => {
     /* 🔔 Activity Log */
@@ -83,6 +85,14 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
         <div className="container flex h-16 items-center justify-between px-6">
           <div className="flex items-center gap-3">
+  {/* Mobile menu button */}
+  <button
+    className="md:hidden p-2 rounded-lg hover:bg-muted"
+    onClick={() => setMobileOpen(true)}
+  >
+    ☰
+  </button>
+
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <Activity className="h-5 w-5 text-primary" />
             </div>
@@ -104,19 +114,36 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="hidden md:flex w-64 flex-col nav-professional">
+        <aside
+  className={cn(
+    "fixed inset-y-0 left-0 z-50 w-64 flex-col nav-professional bg-background",
+    "transform transition-transform duration-300",
+    mobileOpen ? "translate-x-0" : "-translate-x-full",
+    "md:static md:translate-x-0 md:flex"
+  )}
+>
+  <button
+  className="md:hidden mb-4 px-3 py-2 rounded-lg text-sm hover:bg-muted"
+  onClick={() => setMobileOpen(false)}
+>
+  ✕ Close
+</button>
+
+
           <nav className="flex-1 space-y-1 p-4">
             {config.navigation.map((item) => {
               const isActive = location.pathname === item.href;
               return (
                 <Link
-                  key={item.href}
-                  to={item.href}
-                  className={cn(
-                    "nav-item-professional",
-                    isActive && "nav-item-active"
-                  )}
-                >
+  key={item.href}
+  to={item.href}
+  onClick={() => setMobileOpen(false)}
+  className={cn(
+    "nav-item-professional",
+    isActive && "nav-item-active"
+  )}
+>
+
                   <item.icon className="h-5 w-5" />
                   {item.name}
                 </Link>
