@@ -4,32 +4,30 @@ import dotenv from "dotenv";
 dotenv.config();
 
 if (!admin.apps.length) {
-  // 1. Check for the Environment Variable (Production)
+  // Check if we are using the JSON string from Render's Environment Variables
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     try {
-      // Parse the JSON string from the environment variable
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
       
-      // Fix for potential newline issues in the private key
+      // CRITICAL: This line fixes the private key formatting for Linux servers like Render
       serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
 
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
       });
-      console.log("✅ Firebase Admin initialized via Env Var");
-    } catch (err) {
-      console.error("❌ Failed to parse FIREBASE_SERVICE_ACCOUNT:", err);
+      console.log("✅ Firebase Admin initialized via Environment Variable");
+    } catch (error) {
+      console.error("❌ Failed to parse FIREBASE_SERVICE_ACCOUNT:", error);
     }
-  } 
-  // 2. Fallback for Local Development
-  else {
+  } else {
+    // Fallback for your local machine development
     try {
       const serviceAccount = require("../serviceAccountKey.json");
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
       });
-      console.log("✅ Firebase Admin initialized via Local JSON");
-    } catch (err) {
+      console.log("✅ Firebase Admin initialized via local JSON");
+    } catch (error) {
       console.error("❌ Firebase credentials not found in Env or Local File");
     }
   }
