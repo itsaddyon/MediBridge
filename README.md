@@ -7,7 +7,7 @@ The platform supports real-time referral tracking, patient registration, analyti
 
 ---
 
-## 🚀 Features
+## 🚀 **Features**
 
 ### 👨‍⚕️ Multi-Portal System
 - **Clinic Portal** – Register patients, create referrals, track statuses  
@@ -44,6 +44,8 @@ Each portal includes custom dashboards such as:
 - **Active Referrals**
 - **Completed Referrals**
 - **Pending Diagnoses**
+- **Emergency Button**
+- **Gemini ChatBot**
 - Recent referral history
 - Activity logs (for Admin)
 
@@ -53,8 +55,7 @@ Each portal includes custom dashboards such as:
 - Add/edit patient records  
 - Create digital referrals  
 - Auto-updates all dashboard counters  
-- Stored securely in browser LocalStorage (prototype mode)  
-- Ready for migration to cloud/DB backend
+- Stored securely in FireBase  
 
 ---
 
@@ -80,15 +81,12 @@ Each portal includes custom dashboards such as:
 | Maps | Leaflet.js + Google Maps |
 | Storage (prototype) | FireBase |
 | Chatbot | Google Gemini-flash + Geolocation API + React |
+| Storage | FireBase |
+| Chatbot | **Google Gemini-flash** + Geolocation API + React |
 
 ---
 
-
-
-
----
-
-##🧪 **Data Storage** (Prototype Mode)
+## 🧪 Data Storage
 
 MediBridge uses FireBase for storing:
 
@@ -104,12 +102,9 @@ Offline functionality
 
 No backend required
 
+---
 
-##🔮 **Future Enhancements**
-
-Backend API (Node / Firebase / Supabase / Django)
-
-Encrypted patient record storage
+## 🔮 Future Enhancements
 
 Multi-language support (Hindi/regional dialects)
 
@@ -119,10 +114,14 @@ Automatic referral routing logic
 
 Health worker mobile app (React Native)
 
-##🤝 **Contributors**
+--- 
 
-**Adarsh Arya** (itsaddyon) & Team Grey Hats
+## 🤝 Contributors
+
+**Adarsh Arya** & Team Grey Hats
 
 MedTech Category
 
-Built with love, purpose, and clean code.
+Build for everyone 
+
+~itsaddyon
