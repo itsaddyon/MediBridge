@@ -110,4 +110,6 @@ app.get("/api/debug/models", async (_req: any, res: any) => {
 
 const PORT = Number(process.env.PORT || 4001);
 app.use("/api/gemini", geminiRouter);
-app.listen(PORT, () => console.log(`API server listening on http://localhost:${PORT}`));
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});

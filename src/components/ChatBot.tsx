@@ -62,7 +62,10 @@ const getUserLocation = (): Promise<string> => {
     try {
       // 1. Define the Backend URL (Uses Vercel URL if available, otherwise Localhost)
       // Note: If you are using Create React App instead of Vite, use process.env.REACT_APP_BACKEND_URL
-      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+      const BACKEND_URL = import.meta.env.DEV
+  ? "http://10.121.56.154:4000"   // your laptop IP
+  : import.meta.env.VITE_BACKEND_URL;
+
 
       // 2. Use the variable in the fetch call
       const response = await fetch(`${BACKEND_URL}/api/gemini`, {
