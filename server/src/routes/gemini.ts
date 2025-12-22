@@ -54,7 +54,7 @@ SCENARIO A: MEDICAL SYMPTOMS / PAIN / HOSPITAL SEARCH
   - NOT use Markdown pipes (|)
   - Be browser-renderable
   - Include 3 nearest facilities
-- At the end, it gives link to the address of those facilities.
+- At the end, it gives link to the address of those facilities in between the text.
 - Assure the user that it will be cured quickly and not a major unwellness.
 
 SCENARIO B: GENERAL WELLNESS / HEALTH ADVICE / ANY OTHER THINGS
