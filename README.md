@@ -77,9 +77,9 @@ Each portal includes custom dashboards such as:
 | UI Framework | **Tailwind CSS** |
 | Build Tool | **Vite** |
 | Routing | React Router |
-| Maps | Leaflet.js |
-| Storage (prototype) | LocalStorage |
-| Chatbot | Geolocation API + React |
+| Maps | Leaflet.js + Google Maps |
+| Storage (prototype) | FireBase |
+| Chatbot | Google Gemini-flash + Geolocation API + React |
 
 ---
 
@@ -88,9 +88,9 @@ Each portal includes custom dashboards such as:
 
 ---
 
-##🧪 Data Storage (Prototype Mode)
+##🧪 **Data Storage** (Prototype Mode)
 
-MediBridge uses LocalStorage for storing:
+MediBridge uses FireBase for storing:
 
 Patients
 
@@ -104,11 +104,8 @@ Offline functionality
 
 No backend required
 
-Instant testing
 
-##⚠️ In production, this will be replaced with a real database + API.
-
-##🔮 Future Enhancements
+##🔮 **Future Enhancements**
 
 Backend API (Node / Firebase / Supabase / Django)
 
@@ -122,9 +119,9 @@ Automatic referral routing logic
 
 Health worker mobile app (React Native)
 
-##🤝 Contributors
+##🤝 **Contributors**
 
-Adarsh Arya (itsaddyon) & Team
+**Adarsh Arya** (itsaddyon) & Team Grey Hats
 
 MedTech Category
 
