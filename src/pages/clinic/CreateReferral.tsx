@@ -15,7 +15,7 @@ import { toast } from "@/components/ui/use-toast";
 
 import { getAllPatients } from "@/lib/patientService";
 import { createReferralDB } from "@/lib/referralService";
-import { readHospitals, HospitalBed } from "@/lib/bedStore";
+import { listenHospitals, HospitalBed } from "@/lib/hospitalService";
 
 type Hospital = HospitalBed;
 
@@ -41,13 +41,17 @@ export default function CreateReferral() {
     getAllPatients().then(setPatients);
   }, []);
 
-  /* ✅ Load ONLY real hospitals (no dummy data) */
-  useEffect(() => {
-    const realHospitals = readHospitals().filter(
-      h => h.name && h.totalBeds > 0
+useEffect(() => {
+  const unsubscribe = listenHospitals((data) => {
+    setHospitals(
+      data.filter(h => h.name && h.totalBeds > 0)
     );
-    setHospitals(realHospitals);
-  }, []);
+  });
+
+  return () => unsubscribe();
+}, []);
+
+
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
