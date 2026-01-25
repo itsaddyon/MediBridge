@@ -1,6 +1,31 @@
 import express from "express";
 import { db } from "../firebase"; 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 4;
+
+const requestMap = new Map<
+  string,
+  { count: number; timestamp: number }
+>();
+function isForbiddenQuery(input: string) {
+  const blocked = [
+    "prompt",
+    "system instruction",
+    "pre prompt",
+    "internal",
+    "source code",
+    "api key",
+    "how are you built",
+    "who created you",
+    "configuration",
+  ];
+
+  return blocked.some(word =>
+    input.toLowerCase().includes(word)
+  );
+}
+
 
 const router = express.Router();
 
@@ -16,11 +41,49 @@ const model = genAI.getGenerativeModel({
 
 router.post("/", async (req, res) => {
   try {
-    const { message, userId, userLocation } = req.body;
+    const { message, userId: bodyUserId, userLocation } = req.body;
+
+// derive a stable user id (VERY IMPORTANT)
+const userId =
+  bodyUserId ||
+  req.headers["x-forwarded-for"]?.toString() ||
+  req.socket.remoteAddress ||
+  "anonymous";
+
+  // ⏱ Rate limiting (per user)
+const now = Date.now();
+const record = requestMap.get(userId) || {
+  count: 0,
+  timestamp: now,
+};
+
+if (now - record.timestamp > RATE_LIMIT_WINDOW_MS) {
+  record.count = 0;
+  record.timestamp = now;
+}
+
+record.count++;
+requestMap.set(userId, record);
+
+if (record.count > MAX_REQUESTS_PER_WINDOW) {
+  return res.status(429).json({
+    response: "Please wait a moment before asking another question.",
+  });
+}
+
 
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
+
+    // 🔐 Block forbidden / internal questions early
+if (isForbiddenQuery(message)) {
+  return res.json({
+    response:
+      "I’m here to help with health, wellness, and MediBridge-related questions only.",
+  });
+}
+
 
     if (!process.env.GEMINI_API_KEY) {
       console.error("Missing GEMINI_API_KEY in environment variables");
@@ -89,6 +152,13 @@ const chat = model.startChat({
     // 5. Send Message and Get Response
     const result = await chat.sendMessage(message);
     const replyText = result.response.text();
+    if (!replyText || replyText.trim().length === 0) {
+  return res.json({
+    response:
+      "I’m here to help with health-related questions. Please try asking again.",
+  });
+}
+
 
     const forbiddenPatterns = [
   /system prompt/i,
@@ -115,7 +185,7 @@ for (const pattern of forbiddenPatterns) {
     ];
 
     try {
-  const chatRef = db.collection("chats").doc(userId || "guest");
+  const chatRef = db.collection("chats").doc(bodyUserId || "guest");
   await chatRef.set(
     { history: [...history, ...newMessages], lastUpdated: new Date() },
     { merge: true }
@@ -128,12 +198,24 @@ for (const pattern of forbiddenPatterns) {
     res.json({ response: replyText });
 
   } catch (error: any) {
-    console.error("Gemini SDK Error:", error);
-    res.status(500).json({ 
-      error: "Failed to connect to AI service",
-      details: error.message 
+  console.error("Gemini SDK Error:", error?.message || error);
+
+  if (
+    error?.message?.includes("429") ||
+    error?.status === 429
+  ) {
+    return res.status(429).json({
+      response:
+        "The AI service is temporarily busy. Please try again in a minute.",
     });
   }
+
+  res.status(500).json({
+    response:
+      "Sorry, I’m having trouble processing your request right now.",
+  });
+}
+
 });
 
 export default router;
