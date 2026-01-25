@@ -30,7 +30,7 @@ const getUserLocation = (): Promise<string> => {
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          // 🚨 ADD HEADERS HERE to stop the 403 Forbidden error
+          //  ADD HEADERS HERE to stop the 403 Forbidden error
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
             { headers: { 'User-Agent': 'MediBridge-App/1.0' } }
@@ -60,8 +60,6 @@ const getUserLocation = (): Promise<string> => {
     }
 
     try {
-      // 1. Define the Backend URL (Uses Vercel URL if available, otherwise Localhost)
-      // Note: If you are using Create React App instead of Vite, use process.env.REACT_APP_BACKEND_URL
       const BACKEND_URL = import.meta.env.DEV
   ? "http://10.121.56.154:4000"   // your laptop IP
   : import.meta.env.VITE_BACKEND_URL;
@@ -125,7 +123,7 @@ setMessages((prev) => [...prev, botMessage]);
 
   return (
     <>
-      {/* 🌑 DARK MODE TABLE CSS */}
+      {/*  DARK MODE TABLE CSS */}
       <style>{`
         .medical-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; font-size: 11px; border: 1px solid #334155; border-radius: 8px; overflow: hidden; background: #1e293b; }
         .medical-table th { text-align: left; background: #0f172a; padding: 8px; color: #cbd5e1; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #334155; }
@@ -141,7 +139,7 @@ setMessages((prev) => [...prev, botMessage]);
         .map-link:hover { background-color: #06b6d4; }
       `}</style>
 
-      {/* 🚀 NEON LAUNCHER */}
+      {/*  NEON LAUNCHER */}
       <button
         className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-[0_0_20px_rgba(6,182,212,0.6)] z-50 flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95 ${
             isOpen 
@@ -154,10 +152,10 @@ setMessages((prev) => [...prev, botMessage]);
       </button>
 
       {isOpen && (
-        // 📱 RESPONSIVE CONTAINER: 90vw width on mobile, Fixed on Desktop. Shorter height.
+        //  RESPONSIVE CONTAINER: 90vw width on mobile, Fixed on Desktop. Shorter height.
         <div className="fixed bottom-20 right-4 w-[90vw] sm:w-[380px] h-[70vh] sm:h-[600px] flex flex-col z-50 overflow-hidden font-sans border border-slate-700/50 shadow-2xl rounded-2xl animate-in slide-in-from-bottom-10 fade-in duration-300 backdrop-blur-2xl bg-slate-950/90">
           
-          {/* 🌌 DARK HEADER */}
+          {/* DARK HEADER */}
           <div className="p-4 bg-gradient-to-r from-slate-900 to-slate-950 border-b border-slate-800 flex items-center justify-between relative overflow-hidden">
             {/* Animated Glow Behind Header */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
@@ -177,7 +175,7 @@ setMessages((prev) => [...prev, botMessage]);
             <Sparkles className="h-4 w-4 text-slate-600 opacity-50" />
           </div>
 
-          {/* 💬 CHAT AREA */}
+          {/*  CHAT AREA */}
           <div className="flex-1 p-4 overflow-y-auto scroll-smooth custom-scrollbar" ref={scrollRef}>
             <div className="space-y-6">
               {messages.map((m, i) => (
