@@ -141,12 +141,16 @@ SCENARIO C: OUT-OF-SCOPE OR SECURITY-RELATED QUESTIONS
 
 
 const chat = model.startChat({
-  systemInstruction: SYSTEM_PROMPT,
+  systemInstruction: {
+    role: "system",
+    parts: [{ text: SYSTEM_PROMPT }],
+  },
   history: history.map((h: any) => ({
     role: h.role === "user" ? "user" : "model",
     parts: [{ text: h.text }],
   })),
 });
+
 
 
     // 5. Send Message and Get Response
