@@ -41,7 +41,7 @@ const model = genAI.getGenerativeModel({
 
 router.post("/", async (req, res) => {
   try {
-    const { message, userId: bodyUserId, userLocation } = req.body;
+    const { message, userId: bodyUserId, userLocation, mode, patientData, draftNotes } = req.body;
 
 // derive a stable user id (VERY IMPORTANT)
 const userId =
@@ -71,13 +71,8 @@ if (record.count > MAX_REQUESTS_PER_WINDOW) {
   });
 }
 
-
-    if (!message) {
-      return res.status(400).json({ error: "Message is required" });
-    }
-
     // 🔐 Block forbidden / internal questions early
-if (isForbiddenQuery(message)) {
+if (message && isForbiddenQuery(message)) {
   return res.json({
     response:
       "I’m here to help with health, wellness, and MediBridge-related questions only.",
@@ -90,20 +85,45 @@ if (isForbiddenQuery(message)) {
       return res.status(500).json({ error: "Server configuration error" });
     }
 
+    if (mode === "referral_summary") {
+      // AI Referral Assistant Mode
+      const prompt = `
+        You are a Medical Documentation Assistant. Your task is to generate a concise, structured referral summary for a doctor.
+        Keep the output as short as possible to save tokens. Do NOT diagnose or prescribe medication.
+        
+        Patient Data: ${JSON.stringify(patientData || {})}
+        Healthcare Worker Notes: ${draftNotes}
+
+        Format the output precisely as follows (No Markdown blocks around it, just text, keep it extremely brief):
+        SYMPTOMS: <brief list>
+        URGENCY: <low/medium/high based on notes>
+        MISSING INFO: <what the receiving doctor might still need>
+        SUGGESTED QUESTIONS: <1-2 questions for the doctor to ask>
+      `;
+
+      const result = await model.generateContent(prompt);
+      const replyText = result.response.text();
+      return res.json({ response: replyText });
+    }
+
+    // Default ChatBot Mode
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
     const currentLocation = userLocation || "Unknown Location";
 
     let history: any[] = [];
 
-try {
-  const chatRef = db.collection("chats").doc(userId || "guest");
-  const doc = await chatRef.get();
-  history = doc.exists ? doc.data()?.history || [] : [];
-} catch (err) {
-  console.warn("Firestore unavailable, continuing without history");
-}
+    try {
+      const chatRef = db.collection("chats").doc(userId || "guest");
+      const doc = await chatRef.get();
+      history = doc.exists ? doc.data()?.history || [] : [];
+    } catch (err) {
+      console.warn("Firestore unavailable, continuing without history");
+    }
 
-
-    // 3. Define the System Prompt
+    // 3. System Prompt
     const SYSTEM_PROMPT = `
 You are MediBot. A chatbot to help user curing at your best. Developed by Team Grey Hats. Team Lead Adarsh Arya User location: ${currentLocation}.
 
@@ -139,7 +159,6 @@ SCENARIO C: OUT-OF-SCOPE OR SECURITY-RELATED QUESTIONS
 
 `;
 
-
 const chat = model.startChat({
   systemInstruction: {
     role: "system",
@@ -150,8 +169,6 @@ const chat = model.startChat({
     parts: [{ text: h.text }],
   })),
 });
-
-
 
     // 5. Send Message and Get Response
     const result = await chat.sendMessage(message);
@@ -189,15 +206,14 @@ for (const pattern of forbiddenPatterns) {
     ];
 
     try {
-  const chatRef = db.collection("chats").doc(bodyUserId || "guest");
-  await chatRef.set(
-    { history: [...history, ...newMessages], lastUpdated: new Date() },
-    { merge: true }
-  );
-} catch (err) {
-  console.warn("Failed to save chat history, skipping");
-}
-
+      const chatRef = db.collection("chats").doc(userId || "guest");
+      await chatRef.set(
+        { history: [...history, ...newMessages], lastUpdated: new Date() },
+        { merge: true }
+      );
+    } catch (err) {
+      console.warn("Failed to save chat history, skipping");
+    }
 
     res.json({ response: replyText });
 

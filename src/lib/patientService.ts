@@ -35,23 +35,28 @@ const patientsRef = collection(db, "patients");
 ========================= */
 
 export const registerPatient = async (patient: Patient) => {
-  const docRef = await addDoc(patientsRef, {
-    ...patient,
-    createdAt: serverTimestamp(),
-  });
+  try {
+    const docRef = await addDoc(patientsRef, {
+      ...patient,
+      createdAt: serverTimestamp(),
+    });
 
-  /* 🔔 Activity Log */
-  await logActivity({
-    type: "PATIENT_REGISTERED",
-    message: `Patient ${patient.name} registered`,
-    actorRole: "clinic",
-    metadata: {
-      patientId: docRef.id,
-      patientName: patient.name,
-    },
-  });
+    /* 🔔 Activity Log */
+    await logActivity({
+      type: "PATIENT_REGISTERED",
+      message: `Patient ${patient.name} registered`,
+      actorRole: "clinic",
+      metadata: {
+        patientId: docRef.id,
+        patientName: patient.name,
+      },
+    });
 
-  return docRef.id;
+    return docRef.id;
+  } catch (error) {
+    console.error("Error registering patient:", error);
+    throw new Error("Failed to register patient");
+  }
 };
 
 /* =========================
@@ -59,11 +64,16 @@ export const registerPatient = async (patient: Patient) => {
 ========================= */
 
 export const getAllPatients = async (): Promise<Patient[]> => {
-  const q = query(patientsRef, orderBy("createdAt", "desc"));
-  const snap = await getDocs(q);
+  try {
+    const q = query(patientsRef, orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
 
-  return snap.docs.map((doc) => ({
-    id: doc.id,
-    ...(doc.data() as Patient),
-  }));
+    return snap.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as Patient),
+    }));
+  } catch (error) {
+    console.error("Error getting patients:", error);
+    throw new Error("Failed to load patients");
+  }
 };

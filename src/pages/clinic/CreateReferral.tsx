@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
+import AIReferralAssistant from "@/components/AIReferralAssistant";
 
 import { getAllPatients } from "@/lib/patientService";
 import { createReferralDB } from "@/lib/referralService";
@@ -162,6 +163,14 @@ useEffect(() => {
               <SelectItem value="high">High</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* AI Assistant for structuring the referral */}
+          <AIReferralAssistant 
+            patientData={patients.find((p) => p.id === formData.patientId) || null}
+            onSummaryGenerated={(summary) => {
+              handleChange("symptoms", summary);
+            }}
+          />
 
           <Textarea
             placeholder="Symptoms / Reason for referral"
