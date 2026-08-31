@@ -141,6 +141,7 @@ setMessages((prev) => [...prev, botMessage]);
 
       {/*  NEON LAUNCHER */}
       <button
+        aria-label="Toggle ChatBot"
         className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-[0_0_20px_rgba(6,182,212,0.6)] z-50 flex items-center justify-center transition-all duration-300 transform hover:scale-110 active:scale-95 ${
             isOpen 
             ? "bg-rose-600 rotate-90 shadow-[0_0_20px_rgba(225,29,72,0.6)]" 

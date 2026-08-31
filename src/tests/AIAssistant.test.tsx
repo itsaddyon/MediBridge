@@ -16,9 +16,16 @@ describe("AIReferralAssistant", () => {
   });
 
   it("shows loading state when generating summary", async () => {
+    const mockSummary = {
+      symptoms: ["Chest pain"],
+      urgency: "high",
+      missingInfo: ["ECG results"],
+      suggestedQuestions: ["When did it start?"]
+    };
+
     (global.fetch as any).mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ response: "Test summary" })
+      json: async () => ({ response: mockSummary })
     });
 
     render(<AIReferralAssistant patientData={{}} onSummaryGenerated={vi.fn()} />);
@@ -32,7 +39,8 @@ describe("AIReferralAssistant", () => {
     expect(screen.getByText("Generating...")).toBeInTheDocument();
     
     await waitFor(() => {
-      expect(screen.getByText("Summary generated successfully!")).toBeInTheDocument();
+      expect(screen.getByText("Structured AI Summary Generated")).toBeInTheDocument();
+      expect(screen.getByText("Chest pain")).toBeInTheDocument();
     });
   });
 

@@ -1,0 +1,34 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuth() {
+      return request.auth != null;
+    }
+    
+    // For capstone, since there's no complex role assignment via custom claims yet, 
+    // we'll restrict read/write of patients and referrals to authenticated users only.
+    
+    match /patients/{patientId} {
+      allow read, write: if isAuth();
+    }
+    
+    match /referrals/{referralId} {
+      allow read, write: if isAuth();
+    }
+    
+    match /chats/{chatId} {
+      allow read, write: if true; // Temporary allow for MediBot public usage
+    }
+
+    match /users/{userId} {
+      allow read, write: if isAuth() && request.auth.uid == userId;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

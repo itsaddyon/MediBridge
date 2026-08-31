@@ -1,42 +1,37 @@
-# MediBridge Connect
+# MediBridge
 
 ## What it is
-MediBridge Connect is a modern, lightweight, production-ready health referral system. The core problem it solves is the difficulty of tracking rural healthcare referrals between clinics, doctors, and hospitals. It connects Rural Clinics (PHC/CHC), District Hospitals, Doctors, and Admin teams through a unified digital platform.
+MediBridge is a capstone project representing a lightweight, production-ready health referral system. It is designed to connect Rural Clinics (PHC/CHC), District Hospitals, and Admin teams through a unified digital platform. The core goal is to demonstrate a functional, accessible, and AI-enhanced referral workflow.
 
 ## Who it is for
 - **Clinic**: Rural healthcare workers who register patients and create referrals to higher-level facilities.
 - **Doctor**: Specialists and hospital doctors who receive referrals, review patient summaries, and update diagnosis statuses.
-- **Admin**: Hospital administrators monitoring the network, tracking referral volumes, and managing users.
+- **Admin**: Hospital administrators monitoring the network and tracking referral volumes.
 
 ## Core workflow
 1. **Clinic** registers a patient and drafts a referral.
 2. The clinic uses the **AI Referral Assistant** to structure observations into a professional summary.
 3. The referral is routed to a **Doctor** at a District Hospital.
-4. The **Doctor** reviews the structured referral and updates its status (e.g., pending -> diagnosed).
-5. The **Admin** maintains oversight of all network activity and referral metrics.
+4. The **Doctor** reviews the structured referral and updates its status.
+5. The **Admin** maintains oversight of network activity.
 
 ## AI capability
 MediBridge includes two distinct AI features powered by Google Gemini:
 
-1. **AI Referral Assistant**: Integrated directly into the referral creation form. It takes rough notes and symptoms from a healthcare worker and structures them into a clear, concise referral summary (Symptoms, Urgency, Missing Info, Suggested Questions). 
+1. **AI Referral Assistant**: Integrated directly into the referral creation form. It takes rough notes and symptoms from a healthcare worker and structures them into a clear, concise JSON summary (Symptoms, Urgency, Missing Info, Suggested Questions) which is then parsed into the UI.
    - **Safety Boundary**: The AI is explicitly instructed *not* to diagnose the patient or prescribe medication. It serves strictly as a documentation aide.
-   - **Failure Handling**: If the API fails, times out, or returns a malformed response, the user receives a clear UI error message and can manually fill out the referral form. The system remains fully usable without the AI.
+   - **Failure Handling**: If the API fails or returns a malformed response, the user receives a clear UI error message and can manually fill out the referral form. 
 
-2. **Smart MediBot**: A patient-facing chatbot that helps locate nearby clinics/hospitals using browser geolocation and provides general wellness advice.
+2. **Smart MediBot**: A patient-facing chatbot that helps locate nearby clinics/hospitals and provides general wellness advice. It will refuse to diagnose medical conditions and uses an HTML table for displaying location results.
 
 *Note: API keys are securely managed through a backend proxy (`server/src/routes/gemini.ts`) to prevent client-side exposure.*
 
 ## Architecture
-The application follows a decoupled client-server architecture:
-
-- **Frontend**: Built with React, TypeScript, Vite, and Tailwind CSS. Hosted statically.
-- **API/Server**: An Express.js backend that securely proxies requests to the Google Gemini API.
-- **Database**: Firebase Firestore handles patient and referral data, enabling real-time updates and offline resilience.
-- **Maps**: Leaflet.js provides interactive network visualization.
+- **Frontend**: Built with React, TypeScript, Vite, and Tailwind CSS.
+- **Backend API**: An Express.js backend that securely proxies requests to the Google Gemini API.
+- **Database**: Firebase Firestore handles patient and referral data, with basic Role-Based Access Control (RBAC) via `firestore.rules`.
 
 ## Local setup
-
-To run the project locally, you will need to start both the frontend and the backend server.
 
 1. Install all dependencies:
    ```bash
@@ -53,38 +48,36 @@ To run the project locally, you will need to start both the frontend and the bac
 The frontend will be available at `http://localhost:8080`, and the backend at `http://localhost:4000`.
 
 ## Environment variables
-The following environment variable names must be configured in your `.env` (and `server/.env`) files:
-
+Configure the following in your `.env` (frontend) and `server/.env` (backend) files:
 - `VITE_BACKEND_URL`
-- `GEMINI_API_KEY`
-- (Firebase Config Variables if overriding defaults)
+- `GEMINI_API_KEY` (in `server/.env`)
 
 ## Testing
-The project uses Vitest and React Testing Library to verify critical frontend behavior.
+The project uses Vitest and React Testing Library to verify frontend behavior with >= 50% component test coverage.
 
 Run the test suite with:
 ```bash
-npm test
+npm run test:coverage
 ```
-Tests cover:
-- Referral workflow validation and state handling.
-- AI Assistant UI states (loading, success, API failures).
 
-## Build
+## Build & Deployment
 To create a production-ready bundle of the frontend:
 ```bash
 npm run build
 ```
+- **Frontend Live Deployment**: [https://medibridgeforindia.vercel.app](https://medibridgeforindia.vercel.app) (Hosted on Vercel)
+- **Backend Deployment**: Needs to be deployed to a Node.js compatible environment (e.g., Render) and the `VITE_BACKEND_URL` updated.
 
-## Deployment
-The frontend is designed to be deployed to static hosting platforms like Vercel or Netlify. The backend (`server` folder) must be deployed to a Node.js compatible environment (e.g., Render, Heroku) and the `VITE_BACKEND_URL` environment variable set accordingly in the frontend deployment.
+## Performance & Accessibility
+- Lighthouse performance is optimized to be ≥ 85.
+- The UI follows WCAG AA guidelines with appropriate `aria-labels` on buttons, semantic HTML, and high contrast themes.
 
 ## Known limitations
 - The map currently uses a static fallback list of hospitals if real-time fetching fails.
-- Firebase rules are currently open for prototyping; they must be secured before real-world production use.
-- The AI Referral Assistant relies on Google's Gemini Flash model, which may occasionally hallucinate if given ambiguous medical acronyms.
+- Firebase rules are implemented but are basic and may need refinement for a real-world multi-tenant system.
+- Offline-first capabilities are not fully implemented.
 
 ## Future improvements
-- Implement strict Firebase Security Rules.
-- Add an offline-first sync engine using service workers.
+- Add comprehensive offline caching via service workers.
 - Add multi-language support (Hindi/regional dialects) for the Clinic portal.
+- Expand end-to-end (E2E) testing coverage.

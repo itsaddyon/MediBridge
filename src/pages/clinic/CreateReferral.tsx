@@ -168,7 +168,11 @@ useEffect(() => {
           <AIReferralAssistant 
             patientData={patients.find((p) => p.id === formData.patientId) || null}
             onSummaryGenerated={(summary) => {
-              handleChange("symptoms", summary);
+              handleChange("symptoms", summary.symptoms?.join(", ") || "");
+              handleChange("urgency", summary.urgency || "medium");
+              if (summary.missingInfo?.length) {
+                handleChange("tests", `AI Suggestion - Consider tests for: ${summary.missingInfo.join(", ")}`);
+              }
             }}
           />
 

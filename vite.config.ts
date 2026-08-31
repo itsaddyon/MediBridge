@@ -30,5 +30,16 @@ export default defineConfig(() => ({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/tests/setup.ts',
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        singleThread: true,
+      }
+    },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      include: ['src/components/**/*.tsx', 'src/pages/**/*.tsx']
+    }
   },
 }));

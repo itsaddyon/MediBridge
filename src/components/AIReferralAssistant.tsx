@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import { Bot, Loader2, Sparkles, FileText, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "./ui/button";
 
+export interface AIReferralSummary {
+  symptoms: string[];
+  urgency: "low" | "medium" | "high";
+  missingInfo: string[];
+  suggestedQuestions: string[];
+}
+
 interface AIReferralAssistantProps {
   patientData: any;
-  onSummaryGenerated: (summary: string) => void;
+  onSummaryGenerated: (summary: AIReferralSummary) => void;
 }
 
 export default function AIReferralAssistant({ patientData, onSummaryGenerated }: AIReferralAssistantProps) {
@@ -12,6 +19,7 @@ export default function AIReferralAssistant({ patientData, onSummaryGenerated }:
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [summaryData, setSummaryData] = useState<AIReferralSummary | null>(null);
 
   const generateSummary = async () => {
     if (!draftNotes.trim() && !patientData) return;
@@ -41,6 +49,7 @@ export default function AIReferralAssistant({ patientData, onSummaryGenerated }:
       if (!response.ok) throw new Error(data.error || "Failed to generate summary");
 
       if (data.response) {
+        setSummaryData(data.response);
         onSummaryGenerated(data.response);
         setSuccess(true);
       }
@@ -78,10 +87,18 @@ export default function AIReferralAssistant({ patientData, onSummaryGenerated }:
         </div>
       )}
 
-      {success && (
-        <div className="mt-2 flex items-center gap-2 text-green-400 text-sm bg-green-950/30 p-2 rounded border border-green-900/50">
-          <CheckCircle className="h-4 w-4" />
-          Summary generated successfully!
+      {success && summaryData && (
+        <div className="mt-4 p-4 bg-slate-950 rounded-lg border border-cyan-900/30 text-sm text-slate-200">
+          <div className="font-semibold text-cyan-400 mb-2 flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-green-400" />
+            Structured AI Summary Generated
+          </div>
+          <div className="space-y-2">
+            <div><span className="text-slate-400 font-medium">Urgency:</span> <span className={`font-medium ml-1 ${summaryData.urgency === 'high' ? 'text-red-400' : summaryData.urgency === 'medium' ? 'text-amber-400' : 'text-green-400'}`}>{summaryData.urgency.toUpperCase()}</span></div>
+            <div><span className="text-slate-400 font-medium">Symptoms:</span> <span className="ml-1">{summaryData.symptoms?.join(", ")}</span></div>
+            {summaryData.missingInfo?.length > 0 && <div><span className="text-slate-400 font-medium">Missing Info:</span> <span className="ml-1">{summaryData.missingInfo.join(", ")}</span></div>}
+            {summaryData.suggestedQuestions?.length > 0 && <div><span className="text-slate-400 font-medium">Questions for Doctor:</span> <span className="ml-1">{summaryData.suggestedQuestions.join(", ")}</span></div>}
+          </div>
         </div>
       )}
 

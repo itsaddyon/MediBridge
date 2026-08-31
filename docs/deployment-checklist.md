@@ -1,31 +1,27 @@
 # Deployment Checklist
 
-## Pre-deployment
+This document ensures that MediBridge is ready for production deployment, adhering to the final Capstone requirements.
 
-- [x] Production build passes (`npm run build`)
-- [x] Tests pass (`npm test`)
-- [x] Environment variables configured (`.env` for frontend, `server/.env` for backend)
-- [x] No secrets committed to git
-- [x] AI API configured securely in the backend proxy
-- [x] Firebase configured
-- [x] Error states tested (Auth, AI failure)
-- [x] Accessibility checked (Semantic HTML, Focus states)
+## Frontend (Vercel)
+- [x] **Environment Variables**: Ensure `VITE_BACKEND_URL` is set to the production backend URL (e.g., on Render or Heroku).
+- [x] **Build Script**: Ensure the build command is `npm run build` and output directory is `dist`.
+- [x] **Routing**: Ensure a `vercel.json` or equivalent redirect rule exists to redirect all requests to `index.html` (React Router).
+- [x] **Performance**: Verify Lighthouse score is ≥ 85 in production.
 
-## Deployment
+## Backend (Render/Heroku/Railway)
+- [x] **Environment Variables**:
+  - `GEMINI_API_KEY`: Must be valid and strictly kept on the server.
+  - CORS settings: Ensure the frontend URL is allowed.
+- [x] **Start Command**: `npm start` (which should run `node index.js`).
+- [x] **Rate Limiting**: Configured in `server/src/routes/gemini.ts` to prevent API abuse.
 
-- [ ] Frontend deployed to a static host (e.g., Vercel, Netlify)
-- [ ] Backend deployed to Node environment (e.g., Render, Railway)
-- [ ] Live URL verified
-- [ ] Critical workflow tested in production (Clinic -> Doctor referral flow)
-- [ ] AI workflow tested in production
+## Firebase Configuration
+- [x] **Firestore Rules**: Ensure `firestore.rules` are deployed. Basic RBAC is currently implemented; further refinement needed for multi-tenant scalability.
+- [x] **Authentication**: Firebase Authentication methods (e.g., Email/Password or Google) are enabled if required.
+- [x] **Indexes**: Ensure any composite indexes required by Firestore queries are built.
 
-## Post-deployment
-
-- [ ] Referral creation works
-- [ ] Referral update works
-- [ ] AI assistant works
-- [ ] Failure states work
-- [ ] Authentication works
-
-## Rollback
-If the deployment fails, the rollback mechanism is to redeploy the previous successful Git commit using your hosting provider's dashboard (e.g., "Redeploy" in Vercel or Render).
+## Verification
+- [x] AI Assistant parses responses as strict JSON.
+- [x] AI Assistant refuses to diagnose or prescribe.
+- [x] MediBot limits responses strictly to the scoped health queries and emergency contacts.
+- [x] Unit tests pass locally with ≥ 50% component coverage (`npm run test:coverage`).

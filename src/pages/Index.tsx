@@ -129,7 +129,7 @@ export default function Index(): JSX.Element {
       {showEmergency && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="bg-[#0f172a] border border-rose-500/30 p-8 rounded-3xl w-full max-w-md shadow-2xl relative">
-            <button onClick={() => setShowEmergency(false)} className="absolute top-4 right-4 text-slate-400 hover:text-white"><Activity className="h-6 w-6 rotate-45" /></button>
+            <button onClick={() => setShowEmergency(false)} aria-label="Close Emergency Modal" className="absolute top-4 right-4 text-slate-400 hover:text-white"><Activity className="h-6 w-6 rotate-45" /></button>
             <div className="text-center mb-8">
                <div className="h-20 w-20 bg-rose-500/10 rounded-full flex items-center justify-center mb-4 mx-auto text-rose-500 animate-pulse">
                  <Ambulance className="h-10 w-10" />
@@ -167,6 +167,7 @@ export default function Index(): JSX.Element {
       {/* 🚨 ANIMATING EMERGENCY BUTTON */}
       <button
         onClick={() => setShowEmergency(true)}
+        aria-label="Emergency Assistance"
         className={`fixed z-[10000] group flex items-center justify-center rounded-full bg-rose-600/20 border border-rose-500/50 hover:bg-rose-600 hover:border-rose-600 backdrop-blur-md shadow-[0_0_30px_rgba(225,29,72,0.4)] transition-all duration-[1500ms] cubic-bezier(0.22, 1, 0.36, 1)
           ${splashVisible 
              ? "bottom-24 left-1/2 -translate-x-1/2 w-auto px-8 py-4 scale-125 opacity-100" 

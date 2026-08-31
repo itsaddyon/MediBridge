@@ -1,6 +1,6 @@
 import express from "express";
 import { db } from "../firebase"; 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
 const MAX_REQUESTS_PER_WINDOW = 4;
 
@@ -31,7 +31,6 @@ const router = express.Router();
 
 // 1. Initialize the SDK with your API Key
 // Ensure the variable name matches what you set in Render (GEMINI_API_KEY)
-console.log("🔑 GEMINI_API_KEY:", process.env.GEMINI_API_KEY);
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const model = genAI.getGenerativeModel({
@@ -93,17 +92,34 @@ if (message && isForbiddenQuery(message)) {
         
         Patient Data: ${JSON.stringify(patientData || {})}
         Healthcare Worker Notes: ${draftNotes}
-
-        Format the output precisely as follows (No Markdown blocks around it, just text, keep it extremely brief):
-        SYMPTOMS: <brief list>
-        URGENCY: <low/medium/high based on notes>
-        MISSING INFO: <what the receiving doctor might still need>
-        SUGGESTED QUESTIONS: <1-2 questions for the doctor to ask>
       `;
 
-      const result = await model.generateContent(prompt);
+      const modelWithSchema = genAI.getGenerativeModel({
+        model: "models/gemini-1.5-flash",
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: SchemaType.OBJECT,
+            properties: {
+              symptoms: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+              urgency: { type: SchemaType.STRING, enum: ["low", "medium", "high"] },
+              missingInfo: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+              suggestedQuestions: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } }
+            },
+            required: ["symptoms", "urgency", "missingInfo", "suggestedQuestions"]
+          }
+        }
+      });
+
+      const result = await modelWithSchema.generateContent(prompt);
       const replyText = result.response.text();
-      return res.json({ response: replyText });
+      try {
+        const parsed = JSON.parse(replyText);
+        return res.json({ response: parsed });
+      } catch (err) {
+        console.error("Failed to parse Gemini response:", err);
+        return res.status(500).json({ error: "Invalid response format from AI" });
+      }
     }
 
     // Default ChatBot Mode
@@ -130,7 +146,7 @@ You are MediBot. A chatbot to help user curing at your best. Developed by Team G
 ANALYZE USER INTENT FIRST:
 
 SCENARIO A: MEDICAL SYMPTOMS / PAIN / HOSPITAL SEARCH
-- Try giving natural advices of curing the mentioned problems within 2 sentence.
+- Do NOT diagnose or prescribe medication. Encourage them to seek professional medical care if symptoms are severe.
 - IMMEDIATELY follow with a VALID HTML TABLE.
 - The table MUST:
   - Use <table>, <thead>, <tbody>, <tr>, <th>, <td>
@@ -138,10 +154,9 @@ SCENARIO A: MEDICAL SYMPTOMS / PAIN / HOSPITAL SEARCH
   - Be browser-renderable
   - Include 3 nearest facilities
 - At the end, it gives link to the address of those facilities in between the text.
-- Assure the user that it will be cured quickly and not a major unwellness.
 
 SCENARIO B: GENERAL WELLNESS / HEALTH ADVICE / ANY OTHER THINGS
-- Give helpful advice.
+- Give helpful advice, but do not provide medical diagnosis. Direct them to a healthcare professional if unsure.
 - DO NOT include any table.
 
 SCENARIO C: OUT-OF-SCOPE OR SECURITY-RELATED QUESTIONS
