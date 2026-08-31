@@ -102,7 +102,7 @@ if (message && isForbiddenQuery(message)) {
             type: SchemaType.OBJECT,
             properties: {
               symptoms: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
-              urgency: { type: SchemaType.STRING, enum: ["low", "medium", "high"] },
+              urgency: { type: SchemaType.STRING, description: "Urgency level: low, medium, or high" },
               missingInfo: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
               suggestedQuestions: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } }
             },

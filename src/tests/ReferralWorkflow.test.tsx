@@ -3,6 +3,7 @@ import CreateReferral from "../pages/clinic/CreateReferral";
 import { BrowserRouter } from "react-router-dom";
 import React from "react";
 import { toast } from "../components/ui/use-toast";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 // Mock dependencies
 vi.mock("../lib/patientService", () => ({

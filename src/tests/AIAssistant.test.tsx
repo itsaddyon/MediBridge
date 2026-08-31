@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AIReferralAssistant from "../components/AIReferralAssistant";
 import React from "react";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 // Mock the global fetch
 global.fetch = vi.fn();
