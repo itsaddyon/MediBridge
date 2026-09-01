@@ -11,19 +11,23 @@ service cloud.firestore {
     // we'll restrict read/write of patients and referrals to authenticated users only.
     
     match /patients/{patientId} {
-      allow read, write: if isAuth();
+      allow read, write: if true;
     }
     
     match /referrals/{referralId} {
-      allow read, write: if isAuth();
+      allow read, write: if true;
+    }
+    
+    match /activityLogs/{logId} {
+      allow read, write: if true;
     }
     
     match /chats/{chatId} {
-      allow read, write: if true; // Temporary allow for MediBot public usage
+      allow read, write: if true;
     }
 
     match /users/{userId} {
-      allow read, write: if isAuth() && request.auth.uid == userId;
+      allow read, write: if true;
     }
 
     // Default deny

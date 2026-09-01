@@ -77,7 +77,7 @@ const getUserLocation = (): Promise<string> => {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
+      if (!response.ok) throw new Error(data.error || data.response || "Server Error");
 
       const botMessage = {
   role: "model" as const,
