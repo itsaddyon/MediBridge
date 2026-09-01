@@ -17,8 +17,9 @@ describe("RegisterPatient Workflow", () => {
       render(<BrowserRouter><RegisterPatient /></BrowserRouter>);
     });
     const submitBtn = screen.getByRole("button", { name: "Register Patient" });
+    const form = submitBtn.closest("form");
     await act(async () => {
-      fireEvent.click(submitBtn);
+      fireEvent.submit(form!);
     });
     expect(toast.error).toHaveBeenCalledWith("Please fill all required fields");
   });

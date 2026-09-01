@@ -63,4 +63,30 @@ describe("AIReferralAssistant", () => {
       expect(screen.getByText("API Failure")).toBeInTheDocument();
     });
   });
+
+  it("shows controlled fallback message on 503 Service Unavailable", async () => {
+    (global.fetch as unknown).mockResolvedValueOnce({
+      ok: false,
+      status: 503,
+      json: async () => ({
+        success: false,
+        error: {
+          code: "AI_SERVICE_UNAVAILABLE",
+          message: "The AI service is temporarily unavailable."
+        }
+      })
+    });
+
+    render(<AIReferralAssistant patientData={{}} onSummaryGenerated={vi.fn()} />);
+    
+    const input = screen.getByPlaceholderText(/e\.g\. Patient has severe chest pain/i);
+    fireEvent.change(input, { target: { value: "Test symptoms" } });
+    
+    const button = screen.getByText("Generate Structured Summary");
+    fireEvent.click(button);
+    
+    await waitFor(() => {
+      expect(screen.getByText("AI assistance is temporarily unavailable. You can continue creating the referral manually.")).toBeInTheDocument();
+    });
+  });
 });

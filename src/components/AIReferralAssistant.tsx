@@ -46,7 +46,13 @@ export default function AIReferralAssistant({ patientData, onSummaryGenerated }:
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Failed to generate summary");
+      if (!response.ok) {
+        if (data.error?.code === "AI_SERVICE_UNAVAILABLE") {
+          throw new Error("AI_SERVICE_UNAVAILABLE");
+        }
+        const msg = typeof data.error === 'string' ? data.error : data.error?.message;
+        throw new Error(msg || "Failed to generate summary");
+      }
 
       if (data.response) {
         setSummaryData(data.response);
@@ -56,7 +62,11 @@ export default function AIReferralAssistant({ patientData, onSummaryGenerated }:
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("AI Assistant Error:", err);
-      setError(err.message || "An unexpected error occurred.");
+      if (err.message === "AI_SERVICE_UNAVAILABLE") {
+         setError("AI assistance is temporarily unavailable. You can continue creating the referral manually.");
+      } else {
+         setError(err.message || "An unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }

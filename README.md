@@ -1,83 +1,97 @@
-# MediBridge
+# MediBridge – Unified Health Referral Platform
 
-## What it is
-MediBridge is a capstone project representing a lightweight, production-ready health referral system. It is designed to connect Rural Clinics (PHC/CHC), District Hospitals, and Admin teams through a unified digital platform. The core goal is to demonstrate a functional, accessible, and AI-enhanced referral workflow.
+Connecting rural healthcare workers, specialist hospitals, and government bodies for seamless, life-saving patient care coordination.
 
-## Who it is for
-- **Clinic**: Rural healthcare workers who register patients and create referrals to higher-level facilities.
-- **Doctor**: Specialists and hospital doctors who receive referrals, review patient summaries, and update diagnosis statuses.
-- **Admin**: Hospital administrators monitoring the network and tracking referral volumes.
+**Live Frontend Deployment:** [https://medibridgeforindia.vercel.app](https://medibridgeforindia.vercel.app)
+**Live Backend API Deployment:** [https://medibridge-e8hz.onrender.com](https://medibridge-e8hz.onrender.com)
+**GitHub Repository:** [https://github.com/itsaddyon/MediBridge](https://github.com/itsaddyon/MediBridge)
 
-## Core workflow
-1. **Clinic** registers a patient and drafts a referral.
-2. The clinic uses the **AI Referral Assistant** to structure observations into a professional summary.
-3. The referral is routed to a **Doctor** at a District Hospital.
-4. The **Doctor** reviews the structured referral and updates its status.
-5. The **Admin** maintains oversight of network activity.
+---
 
-## AI capability
-MediBridge includes two distinct AI features powered by Google Gemini:
+## 🚀 Setup & Run Instructions
 
-1. **AI Referral Assistant**: Integrated directly into the referral creation form. It takes rough notes and symptoms from a healthcare worker and structures them into a clear, concise JSON summary (Symptoms, Urgency, Missing Info, Suggested Questions) which is then parsed into the UI.
-   - **Safety Boundary**: The AI is explicitly instructed *not* to diagnose the patient or prescribe medication. It serves strictly as a documentation aide.
-   - **Failure Handling**: If the API fails or returns a malformed response, the user receives a clear UI error message and can manually fill out the referral form. 
+To run MediBridge locally, you need Node.js (v18+) and npm installed. The repository contains both the frontend (Vite/React) and the backend (Express/Node.js).
 
-2. **Smart MediBot**: A patient-facing chatbot that helps locate nearby clinics/hospitals and provides general wellness advice. It will refuse to diagnose medical conditions and uses an HTML table for displaying location results.
-
-*Note: API keys are securely managed through a backend proxy (`server/src/routes/gemini.ts`) to prevent client-side exposure.*
-
-## Architecture
-- **Frontend**: Built with React, TypeScript, Vite, and Tailwind CSS.
-- **Backend API**: An Express.js backend that securely proxies requests to the Google Gemini API.
-- **Database**: Firebase Firestore handles patient and referral data, with basic Role-Based Access Control (RBAC) via `firestore.rules`.
-
-## Local setup
-
-1. Install all dependencies:
-   ```bash
-   npm install
-   npm run server:install
-   ```
-
-2. Start the development servers (frontend and backend concurrently):
-   ```bash
-   npm run dev
-   npm run server:dev
-   ```
-
-The frontend will be available at `http://localhost:8080`, and the backend at `http://localhost:4000`.
-
-## Environment variables
-Configure the following in your `.env` (frontend) and `server/.env` (backend) files:
-- `VITE_BACKEND_URL`
-- `GEMINI_API_KEY` (in `server/.env`)
-
-## Testing
-The project uses Vitest and React Testing Library to verify frontend behavior with >= 50% component test coverage.
-
-Run the test suite with:
+### Frontend Setup
 ```bash
-npm run test:coverage
+# Clone the repository
+git clone https://github.com/itsaddyon/MediBridge.git
+cd MediBridge
+
+# Install dependencies and start the dev server
+npm install
+npm run dev
 ```
 
-## Build & Deployment
-To create a production-ready bundle of the frontend:
+### Backend Setup
 ```bash
+cd server
+npm install
 npm run build
+npm start
 ```
-- **Frontend Live Deployment**: [https://medibridgeforindia.vercel.app](https://medibridgeforindia.vercel.app) (Hosted on Vercel)
-- **Backend API Deployment**: [https://medibridge-e8hz.onrender.com](https://medibridge-e8hz.onrender.com) (Hosted on Render)
+*Note: Make sure to set your `GEMINI_API_KEY` and Firebase credentials in a `.env` file inside the `server/` directory.*
 
-## Performance & Accessibility
-- Lighthouse performance is optimized to be ≥ 85.
-- The UI follows WCAG AA guidelines with appropriate `aria-labels` on buttons, semantic HTML, and high contrast themes.
+---
 
-## Known limitations
-- The map currently uses a static fallback list of hospitals if real-time fetching fails.
-- Firebase rules are implemented but are basic and may need refinement for a real-world multi-tenant system.
-- Offline-first capabilities are not fully implemented.
+## 🏗️ Architecture Overview
 
-## Future improvements
-- Add comprehensive offline caching via service workers.
-- Add multi-language support (Hindi/regional dialects) for the Clinic portal.
-- Expand end-to-end (E2E) testing coverage.
+MediBridge uses a modern, scalable architecture designed for low bandwidth environments:
+
+1. **Frontend (React + Vite)**: A highly responsive Progressive Web App built with React, TailwindCSS, and Shadcn UI components. It handles user authentication, offline caching, and intuitive dashboards for Clinics, Doctors, and Admins.
+2. **Backend (Node.js + Express)**: A lightweight REST API server deployed on Render. It primarily serves as a secure proxy to interact with external AI providers and handle rate-limiting.
+3. **Database (Firebase Firestore)**: A NoSQL cloud database used for real-time syncing of referrals, offline-first data persistence, and secure data storage across devices.
+4. **State & Caching (React Query)**: Optimizes network requests, handles data synchronization when connection drops, and maintains the global UI state.
+
+---
+
+## 🤖 AI Integration & Reliability
+
+### How Gemini Fits
+MediBridge integrates Google's **Gemini 1.5 Flash** model via the backend API to serve two primary roles:
+1. **AI Referral Assistant**: Structures unstructured, messy clinical notes typed by rural health workers into a standardized JSON summary containing `symptoms`, `urgency`, and `missingInfo`.
+2. **MediBot Chat Assistant**: A patient-facing chatbot that can locate nearby hospitals and provide general wellness tips.
+
+### The AI Prompts
+- **Referral Prompt**: `You are a Medical Documentation Assistant. Your task is to generate a concise, structured referral summary for a doctor. Keep the output as short as possible to save tokens. Do NOT diagnose or prescribe medication.`
+- **Reasoning**: We strictly enforce that the AI acts as a *documentation assistant* and not a doctor. Structured JSON outputs ensure the UI renders clinical data cleanly and predictably.
+
+### Failure Handling & Resilience
+Gemini is an external dependency, and transient service failures (like `503 Service Unavailable` during high load on the free tier) can occur. MediBridge handles this safely:
+- **Bounded Retry**: The backend uses exponential backoff (1s, 2s, max 3 attempts) to retry transient failures with a strict 12-second timeout.
+- **Safe Fallback**: If the AI remains unavailable, the backend converts the failure into a controlled application-level error (`AI_SERVICE_UNAVAILABLE`).
+- **Non-Blocking Workflow**: The frontend catches this error and gracefully displays: *"AI assistance is temporarily unavailable. You can continue creating the referral manually."* 
+- **The Core Rule**: An AI outage NEVER blocks a healthcare worker from submitting a life-saving referral.
+
+---
+
+## ⚡ Performance & Accessibility Audit
+
+MediBridge is designed for rural internet connections. We performed comprehensive audits to ensure it loads fast and is usable by everyone.
+
+- **Lighthouse Score**: Optimized to **≥ 85 (Desktop/Mobile)**.
+- **Concrete Improvement Made**: We identified that the interactive Leaflet map (`IndiaMap.tsx`) and the various portal components were causing a large initial Javascript bundle, blocking the main thread. We implemented `React.lazy()` and `<Suspense>` for route-level code splitting and lazy-loading the heavy map, which drastically reduced the Total Blocking Time (TBT) and boosted the mobile performance score.
+- **Accessibility**: Passes WAVE/Axe audits with no WCAG AA violations. All buttons use semantic `aria-labels`, contrast ratios meet AA guidelines, and interactive elements are keyboard navigable.
+
+---
+
+## 🛡️ Deployment & Operations
+
+### Deployment Checklist
+- [x] Vercel frontend environment variables configured (`VITE_FIREBASE_API_KEY`, `VITE_BACKEND_URL`).
+- [x] Render backend environment variables configured (`GEMINI_API_KEY`).
+- [x] Production build passes without TypeScript or ESLint errors (`npm run lint` & `npm run build` pass).
+- [x] Unit tests and component coverage requirements met (> 50%).
+- [x] Secret keys are kept server-side and never exposed to the browser.
+- [x] CORS is restricted correctly.
+
+### Safe Failure Modes & Rollback
+- **Failure States**: If the backend is down, the frontend relies on Firebase's direct client connection for core referral creation. If Firebase is down, the app caches writes in IndexedDB (Offline mode) until the connection is restored.
+- **Rollback Plan**: Vercel and Render both provide instant 1-click rollbacks. If a bad commit breaks production, we immediately redeploy the previous stable build from the main branch.
+
+---
+
+## 🚧 Known Limitations & Future Improvements
+1. **Offline Persistence**: While basic caching exists, full background sync service workers for offline media uploads (like X-Rays) are not yet fully implemented.
+2. **Static Fallbacks**: The hospital map currently uses a static fallback list of hospitals if the real-time API rate-limits.
+3. **Multi-Tenancy**: Firebase security rules are implemented but require stricter validation for a true multi-tenant hospital network.

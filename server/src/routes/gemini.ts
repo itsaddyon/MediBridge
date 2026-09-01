@@ -8,6 +8,37 @@ const requestMap = new Map<
   string,
   { count: number; timestamp: number }
 >();
+
+async function withRetryAndTimeout<T>(
+  fn: () => Promise<T>,
+  maxRetries = 2,
+  timeoutMs = 12000
+): Promise<T> {
+  let attempt = 0;
+  while (true) {
+    try {
+      return await Promise.race([
+        fn(),
+        new Promise<T>((_, reject) =>
+          setTimeout(() => reject(new Error("AI_TIMEOUT")), timeoutMs)
+        )
+      ]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const is503 = error?.status === 503 || error?.message?.includes("503");
+      const isTimeout = error?.message === "AI_TIMEOUT";
+      
+      if ((is503 || isTimeout) && attempt < maxRetries) {
+        attempt++;
+        const delay = Math.pow(2, attempt) * 1000; // 2s, 4s
+        console.warn(`[AI] Attempt ${attempt} failed. Retrying in ${delay}ms...`);
+        await new Promise((r) => setTimeout(r, delay));
+        continue;
+      }
+      throw error;
+    }
+  }
+}
 function isForbiddenQuery(input: string) {
   const blocked = [
     "prompt",
@@ -111,13 +142,23 @@ if (message && isForbiddenQuery(message)) {
         }
       });
 
-      const result = await modelWithSchema.generateContent(prompt);
-      const replyText = result.response.text();
       try {
+        const result = await withRetryAndTimeout(() => modelWithSchema.generateContent(prompt));
+        const replyText = result.response.text();
         const parsed = JSON.parse(replyText);
         return res.json({ response: parsed });
-      } catch (err) {
-        console.error("Failed to parse Gemini response:", err);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        if (err?.message === "AI_TIMEOUT" || err?.status === 503 || err?.message?.includes("503")) {
+           return res.status(503).json({
+             success: false,
+             error: {
+               code: "AI_SERVICE_UNAVAILABLE",
+               message: "The AI service is temporarily unavailable."
+             }
+           });
+        }
+        console.error("AI Error (Safe Catch):", err?.message || "Unknown error");
         return res.status(500).json({ error: "Invalid response format from AI" });
       }
     }
