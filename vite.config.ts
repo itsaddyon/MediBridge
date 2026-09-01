@@ -39,7 +39,8 @@ export default defineConfig(() => ({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['src/components/**/*.tsx', 'src/pages/**/*.tsx']
+      include: ['src/components/**/*.tsx', 'src/pages/**/*.tsx'],
+      exclude: ['src/components/ui/**/*.tsx']
     }
   },
 }));

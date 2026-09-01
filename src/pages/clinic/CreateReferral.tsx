@@ -23,7 +23,7 @@ type Hospital = HospitalBed;
 export default function CreateReferral() {
   const navigate = useNavigate();
 
-  const [patients, setPatients] = useState<any[]>([]);
+  const [patients, setPatients] = useState<Array<{ id: string; name: string }>>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
 
   const [formData, setFormData] = useState({

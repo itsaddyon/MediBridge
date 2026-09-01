@@ -13,7 +13,7 @@ export type HospitalBed = {
   name: string;
   totalBeds: number;
   availableBeds: number;
-  lastUpdated?: any;
+  lastUpdated?: unknown;
 };
 
 const colRef = collection(db, "hospitals");

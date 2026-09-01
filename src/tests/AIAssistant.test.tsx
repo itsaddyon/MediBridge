@@ -24,7 +24,7 @@ describe("AIReferralAssistant", () => {
       suggestedQuestions: ["When did it start?"]
     };
 
-    (global.fetch as any).mockResolvedValueOnce({
+    (global.fetch as unknown).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ response: mockSummary })
     });
@@ -46,7 +46,7 @@ describe("AIReferralAssistant", () => {
   });
 
   it("handles errors from the API", async () => {
-    (global.fetch as any).mockResolvedValueOnce({
+    (global.fetch as unknown).mockResolvedValueOnce({
       ok: false,
       json: async () => ({ error: "API Failure" })
     });

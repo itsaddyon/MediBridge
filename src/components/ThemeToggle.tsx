@@ -36,15 +36,15 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
     };
     if (mql && mql.addEventListener) {
       mql.addEventListener("change", handleChange);
-    } else if (mql && (mql as any).addListener) {
-      (mql as any).addListener(handleChange);
+    } else if (mql && 'addListener' in mql) {
+      (mql as MediaQueryList & { addListener: (listener: () => void) => void }).addListener(handleChange);
     }
 
     return () => {
       if (mql && mql.removeEventListener) {
         mql.removeEventListener("change", handleChange);
-      } else if (mql && (mql as any).removeListener) {
-        (mql as any).removeListener(handleChange);
+    } else if (mql && 'removeListener' in mql) {
+        (mql as MediaQueryList & { removeListener: (listener: () => void) => void }).removeListener(handleChange);
       }
     };
   }, [theme]);
@@ -55,7 +55,9 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
     const next = order[(idx + 1) % order.length];
     try {
       localStorage.setItem(STORAGE_KEY, next);
-    } catch {}
+    } catch (e) {
+      // ignore quota exceeded or disabled storage
+    }
     setTheme(next);
     applyTheme(next);
   }

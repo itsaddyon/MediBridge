@@ -13,9 +13,9 @@ import { db } from "@/lib/firebase";
 
 
 export default function AdminDashboard() {
-  const [patients, setPatients] = useState<any[]>([]);
-  const [referrals, setReferrals] = useState<any[]>([]);
-  const [hospitals, setHospitals] = useState<any[]>(() => readHospitals());
+  const [patients, setPatients] = useState<Record<string, unknown>[]>([]);
+  const [referrals, setReferrals] = useState<Record<string, unknown>[]>([]);
+  const [hospitals, setHospitals] = useState<HospitalBed[]>(() => readHospitals());
   const [editingNeeds, setEditingNeeds] = useState<Record<string, string>>({});
 
   useEffect(() => {

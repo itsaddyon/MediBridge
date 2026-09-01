@@ -14,7 +14,7 @@ interface Referral {
   diagnosis: string;
   status: string;
   urgency: string;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 interface ActivityLog {
@@ -22,8 +22,8 @@ interface ActivityLog {
   type: string;
   message: string;
   actorRole: string;
-  createdAt?: any;
-  metadata?: any;
+  createdAt?: unknown;
+  metadata?: unknown;
 }
 
 export default function DoctorNotifications() {
@@ -87,7 +87,7 @@ export default function DoctorNotifications() {
     }
   };
 
-  const formatTimeAgo = (timestamp: any) => {
+  const formatTimeAgo = (timestamp: unknown) => {
     if (!timestamp) return "Unknown";
     const now = new Date();
     const time = timestamp.toDate();

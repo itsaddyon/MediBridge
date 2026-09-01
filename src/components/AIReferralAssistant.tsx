@@ -10,7 +10,7 @@ export interface AIReferralSummary {
 }
 
 interface AIReferralAssistantProps {
-  patientData: any;
+  patientData: unknown;
   onSummaryGenerated: (summary: AIReferralSummary) => void;
 }
 
@@ -53,7 +53,7 @@ export default function AIReferralAssistant({ patientData, onSummaryGenerated }:
         onSummaryGenerated(data.response);
         setSuccess(true);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("AI Assistant Error:", err);
       setError(err.message || "An unexpected error occurred.");
     } finally {

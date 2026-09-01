@@ -21,7 +21,7 @@ export interface Patient {
   phone?: string;
   email?: string;
   bloodGroup?: string;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 /* =========================

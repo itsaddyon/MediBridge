@@ -129,7 +129,7 @@ if (message && isForbiddenQuery(message)) {
 
     const currentLocation = userLocation || "Unknown Location";
 
-    let history: any[] = [];
+    let history: unknown[] = [];
 
     try {
       const chatRef = db.collection("chats").doc(userId || "guest");
@@ -179,7 +179,7 @@ const chat = model.startChat({
     role: "system",
     parts: [{ text: SYSTEM_PROMPT }],
   },
-  history: history.map((h: any) => ({
+  history: history.map((h: unknown) => ({
     role: h.role === "user" ? "user" : "model",
     parts: [{ text: h.text }],
   })),
@@ -232,7 +232,7 @@ for (const pattern of forbiddenPatterns) {
 
     res.json({ response: replyText });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
   console.error("Gemini SDK Error:", error?.message || error);
 
   if (

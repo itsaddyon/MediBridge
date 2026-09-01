@@ -9,7 +9,7 @@ export type Patient = {
   email?: string;
   bloodGroup?: string;
   address?: string;
-  createdAt?: any;
+  createdAt?: unknown;
 };
 
 export type ReferralStatus =
@@ -34,5 +34,5 @@ export type Referral = {
 
   status: ReferralStatus;
   date: string;
-  createdAt?: any;
+  createdAt?: unknown;
 };

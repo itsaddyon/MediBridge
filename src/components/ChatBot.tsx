@@ -86,7 +86,7 @@ const getUserLocation = (): Promise<string> => {
 setMessages((prev) => [...prev, botMessage]);
 
 
-    } catch (error: any) {
+    } catch (error: unknown) {
   console.error("Chatbot error:", error);
   setMessages((prev) => [
     ...prev,
@@ -111,7 +111,7 @@ setMessages((prev) => [...prev, botMessage]);
   };
 
   // Dark Mode Quick Action
-  const QuickAction = ({ icon: Icon, text, onClick }: { icon: any, text: string, onClick: () => void }) => (
+  const QuickAction = ({ icon: Icon, text, onClick }: { icon: unknown, text: string, onClick: () => void }) => (
     <button 
       onClick={onClick}
       className="flex items-center gap-2 px-3 py-2 bg-slate-800/60 backdrop-blur-md border border-slate-700 rounded-full shadow-lg hover:bg-cyan-900/30 hover:border-cyan-500/50 text-xs font-medium text-cyan-400 transition-all whitespace-nowrap group"

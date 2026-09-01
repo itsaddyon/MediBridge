@@ -14,7 +14,7 @@ interface ReferralCardProps {
     tests?: string;
     medications?: string;
     status: "pending" | "accepted" | "diagnosed" | "closed";
-    createdAt?: any;
+    createdAt?: unknown;
   };
 }
 

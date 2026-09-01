@@ -24,7 +24,7 @@ import { Activity, Users, FileText, TrendingUp } from "lucide-react";
 interface Patient {
   id: string;
   name: string;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 interface Referral {
@@ -32,13 +32,13 @@ interface Referral {
   hospital: string;
   diagnosis: string;
   status: string;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 interface ActivityLog {
   id: string;
   type: string;
-  createdAt?: any;
+  createdAt?: unknown;
 }
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];

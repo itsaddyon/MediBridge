@@ -1,7 +1,8 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
@@ -43,31 +44,28 @@ app.get("/api/locations", (req, res) => {
 
 // Server
 const port = process.env.PORT || 4000;
-app.get("/api/debug/models", async (_req: any, res: any) => {
+app.get("/api/debug/models", async (_req: Request, res: Response) => {
   try {
-    const GoogleGenerativeAI =
-      require("@google/generative-ai").GoogleGenerativeAI;
-
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
     const models = await genAI.listModels();
 
     res.json({
       ok: true,
-      models: models.models.map((m: any) => ({
+      models: models.models.map((m: unknown) => ({
         name: m.name,
         supportedGenerationMethods: m.supportedGenerationMethods,
       })),
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Model list error:", err);
     res.status(500).json({
       ok: false,
-      error: err.message,
+      error: err instanceof Error ? err.message : "Unknown error",
     });
   }
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Server running on http://localhost:${port}`);
+app.listen(Number(port), "0.0.0.0", () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${port}`);
 });

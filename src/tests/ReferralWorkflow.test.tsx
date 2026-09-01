@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import CreateReferral from "../pages/clinic/CreateReferral";
 import { BrowserRouter } from "react-router-dom";
 import React from "react";
@@ -39,10 +39,14 @@ describe("CreateReferral Workflow", () => {
   });
 
   it("shows error toast if required fields are missing", async () => {
-    renderWithRouter(<CreateReferral />);
+    await act(async () => {
+      renderWithRouter(<CreateReferral />);
+    });
     
     const submitBtn = screen.getByRole("button", { name: "Create Referral" });
-    fireEvent.click(submitBtn);
+    await act(async () => {
+      fireEvent.click(submitBtn);
+    });
     
     await waitFor(() => {
       expect(toast).toHaveBeenCalledWith({ title: "Please select a patient" });
@@ -52,7 +56,9 @@ describe("CreateReferral Workflow", () => {
   // Note: Radix UI Select components can be tricky to test with basic RTL fireEvent.
   // We're mostly ensuring the component renders without crashing and basic validation works.
   it("renders the form and AI assistant", async () => {
-    renderWithRouter(<CreateReferral />);
+    await act(async () => {
+      renderWithRouter(<CreateReferral />);
+    });
     
     expect(screen.getByRole("heading", { name: "Create Referral" })).toBeInTheDocument();
     expect(screen.getByText("AI Referral Assistant")).toBeInTheDocument();

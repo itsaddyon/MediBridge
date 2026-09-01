@@ -25,7 +25,7 @@ describe("ChatBot Component", () => {
   });
 
   it("sends a message and handles API response", async () => {
-    (global.fetch as any).mockResolvedValueOnce({
+    (global.fetch as unknown).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ response: "Hello from AI" })
     });
@@ -48,7 +48,7 @@ describe("ChatBot Component", () => {
   });
 
   it("handles quick action click", async () => {
-    (global.fetch as any).mockResolvedValueOnce({
+    (global.fetch as unknown).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ response: "Here are hospitals" })
     });
@@ -65,7 +65,7 @@ describe("ChatBot Component", () => {
   });
 
   it("handles API error", async () => {
-    (global.fetch as any).mockResolvedValueOnce({
+    (global.fetch as unknown).mockResolvedValueOnce({
       ok: false,
       json: async () => ({ error: "Server error" })
     });

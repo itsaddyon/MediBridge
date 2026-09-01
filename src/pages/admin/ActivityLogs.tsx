@@ -11,7 +11,7 @@ import { ActivityLogType } from "@/lib/activityLogService";
 
 
 export default function ActivityLogs() {
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<Record<string, unknown>[]>([]);
 
   useEffect(() => {
   const q = query(
