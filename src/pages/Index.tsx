@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, Building2, Stethoscope, Shield, MapPin, Ambulance, Phone, ArrowRight, CheckCircle2, HeartPulse, UserCheck, FileText, Globe } from "lucide-react";
-import IndiaMap from "@/components/IndiaMap";
+const IndiaMap = React.lazy(() => import("@/components/IndiaMap"));
 import ChatBot from "@/components/ChatBot";
 import ThemeToggle from "@/components/ThemeToggle";
 import { collection, getCountFromServer, query, where } from "firebase/firestore";
@@ -275,7 +275,9 @@ export default function Index(): JSX.Element {
                >
                  <div className="relative bg-[#0f172a] border border-white/10 rounded-2xl overflow-hidden shadow-2xl h-[400px]">
                     <div className="h-full w-full grayscale-[20%] hover:grayscale-0 transition-all duration-700">
-                       <IndiaMap />
+                       <React.Suspense fallback={<div className="h-full w-full flex items-center justify-center text-slate-500">Loading map...</div>}>
+                         <IndiaMap />
+                       </React.Suspense>
                     </div>
                  </div>
                </div>

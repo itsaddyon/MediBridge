@@ -4,9 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import ClinicLogin from "./pages/ClinicLogin";
-import DoctorLogin from "./pages/DoctorLogin";
-import AdminLogin from "./pages/AdminLogin";
+const ClinicLogin = lazy(() => import("./pages/ClinicLogin"));
+const DoctorLogin = lazy(() => import("./pages/DoctorLogin"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 import { lazy, Suspense } from "react";
 const ClinicDashboard = lazy(() => import("./pages/clinic/ClinicDashboard"));
 const RegisterPatient = lazy(() => import("./pages/clinic/RegisterPatient"));
@@ -25,7 +25,7 @@ const ActivityLogs = lazy(() => import("./pages/admin/ActivityLogs"));
 const AdminAnalytics = lazy(() => import("./pages/admin/AdminAnalytics"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 import NotFound from "./pages/NotFound";
-import PatientForm from './pages/PatientForm';
+const PatientForm = lazy(() => import('./pages/PatientForm'));
 
 const queryClient = new QueryClient();
 

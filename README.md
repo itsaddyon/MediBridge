@@ -66,7 +66,7 @@ To create a production-ready bundle of the frontend:
 npm run build
 ```
 - **Frontend Live Deployment**: [https://medibridgeforindia.vercel.app](https://medibridgeforindia.vercel.app) (Hosted on Vercel)
-- **Backend Deployment**: Needs to be deployed to a Node.js compatible environment (e.g., Render) and the `VITE_BACKEND_URL` updated.
+- **Backend API Deployment**: [https://medibridge-e8hz.onrender.com](https://medibridge-e8hz.onrender.com) (Hosted on Render)
 
 ## Performance & Accessibility
 - Lighthouse performance is optimized to be ≥ 85.
