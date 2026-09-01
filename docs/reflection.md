@@ -1,15 +1,10 @@
-# Project Reflection
+# Capstone Reflection
 
-Reflecting on the MediBridge capstone project journey, the process transformed a promising prototype into a production-ready application. 
+### 1. What was hardest and why?
+The hardest part of this project was managing the unpredictability of an external LLM dependency (Gemini 503 failures) while ensuring a strictly structured JSON response for a medical context. Structuring the prompt to absolutely refuse diagnosing while consistently returning perfectly structured arrays of symptoms and missing info required careful tuning. Furthermore, making sure the UI never crashes or blocks the core product workflow when that external AI service goes down required a robust bounded retry and safe-failure design pattern.
 
-## Technical Challenges Overcome
-1. **AI Determinism**: Getting Gemini to return consistent, structured data was initially challenging. Moving from standard text prompts to utilizing the `responseSchema` property with `application/json` was a game-changer, allowing the frontend to confidently parse and render the AI's output without complex regex or error-prone string manipulation.
-2. **Testing Environments**: Setting up Vitest to run reliably without worker timeouts on Windows required specific pool configurations (`singleThread`).
-3. **Security Constraints**: Auditing the project revealed that API keys could easily leak if not careful. By strictly segregating the Gemini API calls to the Express backend and explicitly `.gitignore`ing the `server/.env` file, we ensured production safety.
+### 2. What would you do differently?
+If I were to start over, I would adopt a state machine approach (like XState) for the core referral form. Handling the complex async states of fetching location, pinging the backend AI, parsing JSON, and merging it with manual user inputs led to some heavily chained React effects. A formal state machine would make the "AI Failed -> Switch to Manual Mode" transition mathematically verifiable.
 
-## Learnings
-- **Accessibility is not optional**: Adding `aria-labels` and semantic markup is critical for healthcare applications, as users may be in high-stress situations or relying on assistive technologies.
-- **Fail Gracefully**: AI features are powerful but fallible. Building the AI Referral Assistant such that it falls back gracefully when the API fails (allowing manual entry) ensures the core business workflow is never blocked.
-
-## Future Outlook
-MediBridge is well-positioned for pilot testing. The next phase will focus on comprehensive offline-first capabilities using Service Workers, as rural healthcare clinics frequently face intermittent internet connectivity. Furthermore, refining Firestore security rules for a multi-tenant environment (where different hospitals cannot see each other's patients) will be essential for real-world scaling.
+### 3. One thing you learned that surprised you.
+I was surprised by how much of an impact code-splitting the interactive map (`React.lazy` on Leaflet) had on the Lighthouse Performance score. I assumed the bulk of the lag was from React rendering the complex portal layout, but moving the map out of the main initial bundle completely eliminated the main-thread blocking bottleneck on mobile devices, taking us to a 95 Performance score without needing to strip out any visual fidelity.

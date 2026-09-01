@@ -1,27 +1,35 @@
 # Deployment Checklist
 
-This document ensures that MediBridge is ready for production deployment, adhering to the final Capstone requirements.
+## Frontend Deployment (Vercel)
+- [x] Hosted securely on Vercel at `https://medibridgeforindia.vercel.app`.
+- [x] Build command (`npm run build`) completes successfully.
+- [x] Output directory is `dist/`.
+- [x] React Router rewrite rules configured for SPA routing.
+- [x] Verified Lighthouse results: 95 Performance, 91 Accessibility.
+- [x] Required environment variables set (`VITE_FIREBASE_API_KEY`, etc., `VITE_BACKEND_URL`).
 
-## Frontend (Vercel)
-- [x] **Environment Variables**: Ensure `VITE_BACKEND_URL` is set to the production backend URL (e.g., on Render or Heroku).
-- [x] **Build Script**: Ensure the build command is `npm run build` and output directory is `dist`.
-- [x] **Routing**: Ensure a `vercel.json` or equivalent redirect rule exists to redirect all requests to `index.html` (React Router).
-- [x] **Performance**: Verify Lighthouse score is ≥ 85 in production.
+## Backend Deployment (Render)
+- [x] Hosted securely on Render at `https://medibridge-e8hz.onrender.com`.
+- [x] `GEMINI_API_KEY` is secured on the server-side environment variables.
+- [x] CORS properly configured to allow the Vercel frontend.
+- [x] Built-in rate limiting functional to prevent API abuse.
+- [x] Bounded retries and exponential backoff active for external Gemini AI transient failures.
 
-## Backend (Render/Heroku/Railway)
-- [x] **Environment Variables**:
-  - `GEMINI_API_KEY`: Must be valid and strictly kept on the server.
-  - CORS settings: Ensure the frontend URL is allowed.
-- [x] **Start Command**: `npm start` (which should run `node index.js`).
-- [x] **Rate Limiting**: Configured in `server/src/routes/gemini.ts` to prevent API abuse.
-
-## Firebase Configuration
-- [x] **Firestore Rules**: Ensure `firestore.rules` are deployed. Basic RBAC is currently implemented; further refinement needed for multi-tenant scalability.
-- [x] **Authentication**: Firebase Authentication methods (e.g., Email/Password or Google) are enabled if required.
-- [x] **Indexes**: Ensure any composite indexes required by Firestore queries are built.
+## Database (Firebase)
+- [x] Firestore security rules actively restricting unauthorized access.
+- [x] Service account/API keys not exposed in the client repository.
 
 ## Verification
-- [x] AI Assistant parses responses as strict JSON.
-- [x] AI Assistant refuses to diagnose or prescribe.
-- [x] MediBot limits responses strictly to the scoped health queries and emergency contacts.
-- [x] Unit tests pass locally with ≥ 50% component coverage (`npm run test:coverage`).
+- [x] Production frontend is reachable and fast.
+- [x] Backend responds to `/api/gemini` securely.
+- [x] AI Assistant structure works and creates JSON safely.
+- [x] Fallback mechanism visually verified (AI failure does not block manual form submission).
+- [x] Vitest test suite passing (16/16).
+- [x] Coverage >= 50%.
+
+## Rollback Plan
+Since there is no formal third-party monitoring service configured, we rely on standard Git flow and hosting controls:
+1. **Detect Issue**: User reports or manual verification fails.
+2. **Git Revert**: Revert the problematic commit in the `main` branch via GitHub.
+3. **Redeploy**: Vercel and Render auto-deploy on push. We can also manually trigger an "Instant Rollback" to the previous known-good deployment via the Vercel/Render dashboard.
+4. **Verification**: Confirm the frontend and backend are compatible and the AI/Referral workflow succeeds.

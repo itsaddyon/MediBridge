@@ -2,6 +2,8 @@
 
 Connecting rural healthcare workers, specialist hospitals, and government bodies for seamless, life-saving patient care coordination.
 
+**Capstone Project Brief**: MediBridge solves the critical lack of structured, real-time medical referral communication between under-resourced rural clinics and urban specialist hospitals in India. It is designed for front-line health workers who need to rapidly document patient symptoms and secure hospital beds, and for specialists who need reliable, structured clinical data before the patient arrives. This idea was chosen because disorganized, paper-based referrals frequently lead to preventable delays in emergency medical care.
+
 **Live Frontend Deployment:** [https://medibridgeforindia.vercel.app](https://medibridgeforindia.vercel.app)
 **Live Backend API Deployment:** [https://medibridge-e8hz.onrender.com](https://medibridge-e8hz.onrender.com)
 **GitHub Repository:** [https://github.com/itsaddyon/MediBridge](https://github.com/itsaddyon/MediBridge)

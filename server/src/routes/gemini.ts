@@ -228,7 +228,7 @@ const chat = model.startChat({
 });
 
     // 5. Send Message and Get Response
-    const result = await chat.sendMessage(message);
+    const result = await withRetryAndTimeout(() => chat.sendMessage(message));
     const replyText = result.response.text();
     if (!replyText || replyText.trim().length === 0) {
   return res.json({
@@ -285,6 +285,17 @@ for (const pattern of forbiddenPatterns) {
     return res.status(429).json({
       response:
         "The AI service is temporarily busy. Please try again in a minute.",
+    });
+  }
+
+  if (
+    error?.message?.includes("503") ||
+    error?.status === 503 ||
+    error?.message === "AI_TIMEOUT"
+  ) {
+    return res.status(503).json({
+      response:
+        "The AI service is temporarily unavailable. Please try again later.",
     });
   }
 
