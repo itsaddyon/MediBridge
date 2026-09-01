@@ -48,11 +48,11 @@ app.get("/api/debug/models", async (_req: Request, res: Response) => {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-    const models = await genAI.listModels();
+    const models = await (genAI as any).listModels();
 
     res.json({
       ok: true,
-      models: models.models.map((m: unknown) => ({
+      models: models.models.map((m: any) => ({
         name: m.name,
         supportedGenerationMethods: m.supportedGenerationMethods,
       })),

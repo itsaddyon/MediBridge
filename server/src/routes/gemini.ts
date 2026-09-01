@@ -179,7 +179,7 @@ const chat = model.startChat({
     role: "system",
     parts: [{ text: SYSTEM_PROMPT }],
   },
-  history: history.map((h: unknown) => ({
+  history: history.map((h: any) => ({
     role: h.role === "user" ? "user" : "model",
     parts: [{ text: h.text }],
   })),
@@ -232,7 +232,7 @@ for (const pattern of forbiddenPatterns) {
 
     res.json({ response: replyText });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
   console.error("Gemini SDK Error:", error?.message || error);
 
   if (

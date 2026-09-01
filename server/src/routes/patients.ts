@@ -15,7 +15,7 @@ function authenticate(req: AuthRequest, res: express.Response, next: express.Nex
   if (parts.length !== 2) return res.status(401).json({ error: 'invalid auth header' })
 
   try {
-    const payload: unknown = jwt.verify(parts[1], JWT_SECRET)
+    const payload: any = jwt.verify(parts[1], JWT_SECRET)
     req.userId = payload.userId
     next()
   } catch (err) {
