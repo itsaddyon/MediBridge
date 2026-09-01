@@ -48,10 +48,12 @@ app.get("/api/debug/models", async (_req: Request, res: Response) => {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const models = await (genAI as any).listModels();
 
     res.json({
       ok: true,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       models: models.models.map((m: any) => ({
         name: m.name,
         supportedGenerationMethods: m.supportedGenerationMethods,

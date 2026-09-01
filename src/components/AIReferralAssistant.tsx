@@ -53,7 +53,8 @@ export default function AIReferralAssistant({ patientData, onSummaryGenerated }:
         onSummaryGenerated(data.response);
         setSuccess(true);
       }
-    } catch (err: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       console.error("AI Assistant Error:", err);
       setError(err.message || "An unexpected error occurred.");
     } finally {

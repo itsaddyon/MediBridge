@@ -179,6 +179,7 @@ const chat = model.startChat({
     role: "system",
     parts: [{ text: SYSTEM_PROMPT }],
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   history: history.map((h: any) => ({
     role: h.role === "user" ? "user" : "model",
     parts: [{ text: h.text }],
@@ -232,6 +233,7 @@ for (const pattern of forbiddenPatterns) {
 
     res.json({ response: replyText });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
   console.error("Gemini SDK Error:", error?.message || error);
 
